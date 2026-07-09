@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discord Studio 2026</title>
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+    --bg: #0e1118;
+    --card: rgba(27, 32, 46, 0.7);
+    --blue: #5865F2;
+    --green: #23a55a;
+    --text: #e3e5e8;
+    --accent: #00f2fe;
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --neon-glow: 0 0 15px rgba(88, 101, 242, 0.6);
+}
+
+[data-theme="light"] {
+    --bg: #f4f6f9;
+    --card: rgba(255, 255, 255, 0.7);
+    --blue: #5865F2;
+    --green: #23a55a;
+    --text: #11141c;
+    --accent: #ff007f;
+    --glass-border: rgba(0, 0, 0, 0.05);
+    --neon-glow: 0 0 15px rgba(88, 101, 242, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background 0.3s, color 0.3s;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+}
+
+/* Animované částicové pozadí na plátně */
+#particle-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Animovaný vlastní kurzor */
+.custom-cursor {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--blue);
+    border-radius: 50%;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 100000;
+    transition: width 0.2s, height 0.2s, background-color 0.2s;
+}
+.custom-cursor-dot {
+    width: 4px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 100000;
+}
+
+/* Úvodní načítací animace (Loader) */
+#loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0e1118;
+    z-index: 999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transition: opacity 0.5s ease, visibility 0.5s;
+}
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(88, 101, 242, 0.2);
+    border-top: 5px solid var(--blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* Header & Navigace */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    background: rgba(17, 20, 28, 0.7);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--glass-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+    background: linear-gradient(45deg, #fff, var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.nav-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: var(--blue);
+    color: white;
+    font-weight: bold;
+    transition: 0.3s;
+    box-shadow: var(--neon-glow);
+}
+.nav-btn:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.2);
+}
+.theme-toggle, .lang-select {
+    background: var(--card);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* Hero Sekce */
+.hero {
+    text-align: center;
+    padding: 120px 20px 80px 20px;
+}
+.hero h1 {
+    font-size: 55px;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #fff, var(--blue), var(--accent));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 4s linear infinite;
+}
+@keyframes shine { to { background-position: 200% center; } }
+.hero p {
+    font-size: 20px;
+    color: #aaa;
+    max-width: 700px;
+    margin: auto;
+}
+
+/* Statistiky / Počítadla */
+.stats-container {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    padding: 30px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+.stat-box {
+    text-align: center;
+    background: var(--card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    padding: 20px 40px;
+    border-radius: 15px;
+    min-width: 180px;
+}
+.stat-number {
+    font-size: 35px;
+    font-weight: bold;
+    color: var(--accent);
+}
+
+/* Glassmorphism Ceník s Neon Efekty */
+.pricing {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    padding: 50px;
+}
+.card {
+    width: 320px;
+    background: var(--card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 35px;
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s, border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+.card:hover {
+    transform: translateY(-12px);
+    border-color: var(--blue);
+    box-shadow: var(--neon-glow);
+}
+.card h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 26px;
+}
+.price {
+    font-size: 42px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 25px;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255,255,255,0.2);
+}
+[data-theme="light"] .price { color: var(--text); }
+.features {
+    list-style: none;
+    margin-bottom: 30px;
+}
+.features li {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.buy {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    background: var(--blue);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(88, 101, 242, 0.4);
+}
+.buy:hover {
+    background: #4752c4;
+    box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6);
+}
+
+/* FAQ sekce */
+.faq-section {
+    max-width: 800px;
+    margin: 60px auto;
+    padding: 0 20px;
+}
+.faq-section h2 { text-align: center; margin-bottom: 30px; }
+.faq-item {
+    background: var(--card);
+    border: 1px solid var(--glass-border);
+    margin-bottom: 15px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.faq-question {
+    padding: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.faq-answer {
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    color: #aaa;
+}
+
+/* Moderní Objednávkový Formulář (Modal) */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    justify-content: center; align-items: center;
+    z-index: 200;
+}
+.modal-content {
+    background: var(--card);
+    border: 1px solid var(--glass-border);
+    padding: 40px;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: var(--neon-glow);
+}
+.modal-content h2 { margin-bottom: 20px; }
+.modal-content input, .modal-content textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    background: rgba(0,0,0,0.2);
+    color: var(--text);
+}
+
+/* Toast Notifikace */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10000;
+}
+.toast {
+    background: var(--green);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    margin-top: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: slideIn 0.3s ease forwards;
+}
+@keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+/* Administrace */
+.admin-panel {
+    display: none;
+    position: fixed;
+    top: 0; right: 0;
+    width: 450px; height: 100%;
+    background: #161a22;
+    color: #e3e5e8;
+    overflow-auto: auto;
+    padding: 30px;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.6);
+    z-index: 999;
+}
+.admin-panel input, .admin-panel textarea {
+    width: 100%; padding: 10px; margin: 8px 0;
+    border: none; border-radius: 8px; background: #11141c; color: white;
+}
+.admin-panel button {
+    margin-top: 15px; width: 100%; padding: 14px;
+    border: none; background: var(--green); color: white;
+    font-weight: bold; border-radius: 10px; cursor: pointer;
+}
+.closeAdmin { background: #c0392b !important; }
+
+.loginBox {
+    display: none; position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    justify-content: center; align-items: center; z-index: 9999;
+}
+.loginContent { background: #1b202e; padding: 40px; border-radius: 20px; width: 350px; text-align: center;}
+.loginContent input { width: 100%; padding: 15px; margin: 15px 0; border: none; border-radius: 10px; background: #11141c; color: white;}
+.loginContent button { width: 100%; padding: 15px; border: none; border-radius: 10px; background: var(--blue); color: white; font-weight: bold; cursor: pointer;}
+
+@media (max-width: 768px) {
+    header { padding: 20px; }
+    .hero h1 { font-size: 38px; }
+    .pricing { padding: 20px; }
+    .admin-panel { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+<div class="custom-cursor" id="cursor"></div>
+<div class="custom-cursor-dot" id="cursor-dot"></div>
+
+<div id="loader">
+    <div class="spinner"></div>
+    <p style="margin-top: 15px; color: #5865F2; font-weight: bold;">Loading Studio...</p>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<header>
+    <div class="logo">Discord Studio</div>
+    <nav>
+        <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
+            <option value="cs">🇨🇿 CZ</option>
+            <option value="en">🇬🇧 EN</option>
+            <option value="de">🇩🇪 DE</option>
+            <option value="sk">🇸🇰 SK</option>
+            <option value="pl">🇵🇱 PL</option>
+        </select>
+        <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+        <button class="nav-btn" onclick="openAdminLogin()">Administrace</button>
+    </nav>
+</header>
+
+<section class="hero" data-aos="zoom-in">
+    <h1 id="heroTitle">Vytvoř si profesionální Discord server</h1>
+    <p id="heroText">Kompletní tvorba Discord serverů, botů a automatizace na míru.</p>
+</section>
+
+<div class="stats-container" data-aos="fade-up">
+    <div class="stat-box">
+        <div class="stat-number" id="stat1">200+</div>
+        <div id="statLabel1">Hotových serverů</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-number" id="stat2">50+</div>
+        <div id="statLabel2">Vlastních botů</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-number" id="stat3">99%</div>
+        <div id="statLabel3">Spokojenost</div>
+    </div>
+</div>
+
+<section class="pricing">
+    <div class="card" data-aos="fade-up" data-aos-delay="100">
+        <h2 id="name1">Start</h2>
+        <div class="price" id="price1">300 Kč</div>
+        <ul class="features">
+            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f1_1">Základní server</span></li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f1_2">Nastavení rolí</span></li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f1_3">Kanály & Práva</span></li>
+        </ul>
+        <button class="buy" onclick="openOrderModal('Start')">Objednat</button>
+    </div>
+
+    <div class="card" data-aos="fade-up" data-aos-delay="200">
+        <h2 id="name2">Medium</h2>
+        <div class="price" id="price2">750 Kč</div>
+        <ul class="features">
+            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f2_1">Vše ze Startu</span></li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f2_2">Ticket systém</span></li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f2_3">Pokročilý design</span></li>
+        </ul>
+        <button class="buy" onclick="openOrderModal('Medium')">Objednat</button>
+    </div>
+
+    <div class="card" data-aos="fade-up" data-aos-delay="300">
+        <h2 id="name3">Pro</h2>
+        <div class="price" id="price3">1500 Kč</div>
+        <ul class="features">
+            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f3_1">Vše z Medium</span></li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f3_2">Bot na míru</span></li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f3_3">Propojení s API</span></li>
+        </ul>
+        <button class="buy" onclick="openOrderModal('Pro')">Objednat</button>
+    </div>
+</section>
+
+<section class="faq-section" data-aos="fade-up">
+    <h2 id="faqTitle">Často kladené otázky</h2>
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">Jak dlouho trvá vytvoření? <i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer"><p style="padding-bottom:20px;">Většinou máme server hotový do 3 až 5 dnů v závislosti na komplexnosti zadání.</p></div>
+    </div>
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">Jak probíhá platba? <i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer"><p style="padding-bottom:20px;">Podrobnosti o platbě s vámi vyřešíme po odeslání formuláře na základě vašich preferencí.</p></div>
+    </div>
+</section>
+
+<div class="modal" id="orderModal">
+    <div class="modal-content">
+        <h2 id="modalTitle">Objednávka balíčku</h2>
+        <input type="hidden" id="selectedPackage">
+        <label>Jméno / Nick</label>
+        <input type="text" id="orderName" required>
+        <label>Discord Tag / ID</label>
+        <input type="text" id="orderDiscord" placeholder="např. user#0000" required>
+        <label>E-mail</label>
+        <input type="email" id="orderEmail" required>
+        <label>Co chceš vytvořit (detaily)</label>
+        <textarea id="orderDetails" rows="3" required></textarea>
+        <label>Poznámka</label>
+        <textarea id="orderNote" rows="2"></textarea>
+        <button class="buy" onclick="submitOrder()">Pokračovat</button>
+        <button class="buy closeAdmin" style="margin-top:10px;" onclick="closeOrderModal()">Zrušit</button>
+    </div>
+</div>
+
+<div class="loginBox" id="loginBox">
+    <div class="loginContent">
+        <h2>Administrátor</h2>
+        <input type="text" id="adminUser" placeholder="Uživatelské jméno">
+        <input type="password" id="adminPass" placeholder="Heslo">
+        <button onclick="loginAdmin()">Přihlásit se</button>
+        <button class="buy closeAdmin" style="margin-top:15px;" onclick="closeLogin()">Zavřít</button>
+    </div>
+</div>
+
+<div class="admin-panel" id="adminPanel">
+    <h2>Administrace</h2>
+    <div style="max-height: 80vh; overflow-y: auto; padding-right: 5px;">
+        <h3>Ceník & Texty</h3>
+        <label>Balíček 1 Název / Cena</label>
+        <input id="editName1"><input id="editPrice1">
+        <label>Balíček 2 Název / Cena</label>
+        <input id="editName2"><input id="editPrice2">
+        <label>Balíček 3 Název / Cena</label>
+        <input id="editName3"><input id="editPrice3">
+
+        <h3>Statistiky</h3>
+        <input id="editStat1" placeholder="Statistika 1"><input id="editStatLabel1" placeholder="Popisek 1">
+        <input id="editStat2" placeholder="Statistika 2"><input id="editStatLabel2" placeholder="Popisek 2">
+
+        <h3>Integrace a Odkazy</h3>
+        <label>Discord Webhook URL</label>
+        <input id="webhookLink">
+        <label>Google Forms / Následné přesměrování URL</label>
+        <input id="googleFormsLink">
+        
+        <h3>Web Texty (CS verze)</h3>
+        <label>Hero Nadpis</label>
+        <input id="editHeroTitle">
+        <label>Hero Popisek</label>
+        <textarea id="editHeroText"></textarea>
+
+        <button onclick="saveSettings()">Uložit změny</button>
+        <button class="closeAdmin" onclick="closeAdmin()">Zavřít panel</button>
+    </div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+// Konfigurace Admina
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "V9#Discord2026!";
+
+// Vícejazyčnost - základní textová pole
+const translations = {
+    cs: { heroT: "Vytvoř si profesionální Discord server", heroP: "Kompletní tvorba Discord serverů, botů a automatizace na míru.", faq: "Často kladené otázky" },
+    en: { heroT: "Create a Professional Discord Server", heroP: "Complete creation of Discord servers, bots and custom automation.", faq: "Frequently Asked Questions" },
+    de: { heroT: "Erstellen Sie einen professionellen Discord-Server", heroP: "Komplette Erstellung von Discord-Servern, Bots und Automatisierung.", faq: "Häufig gestellte Fragen" },
+    sk: { heroT: "Vytvor si profesionálny Discord server", heroP: "Kompletná tvorba Discord serverov, botov a automatizácie na mieru.", faq: "Často kladené otázky" },
+    pl: { heroT: "Stwórz profesjonalny serwer Discord", heroP: "Kompletne tworzenie serwerów Discord, botów i automatyzacji.", faq: "Najczęściej zadawane pytania" }
+};
+
+// Inicializace animací a odstranění loaderu
+window.addEventListener('DOMContentLoaded', () => {
+    AOS.init({ duration: 1000, once: true });
+    setTimeout(() => {
+        const loader = document.getElementById('loader');
+        loader.style.opacity = '0';
+        setTimeout(() => loader.style.display = 'none', 500);
+    }, 800);
+    loadSettings();
+    initParticles();
+});
+
+// Sledování vlastního kurzoru
+const cursor = document.getElementById('cursor');
+const cursorDot = document.getElementById('cursor-dot');
+document.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    cursorDot.style.left = e.clientX + 'px';
+    cursorDot.style.top = e.clientY + 'px';
+});
+
+// Přepínání Dark/Light motivu
+function toggleTheme() {
+    const currentTheme = document.body.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    document.body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.querySelector('.theme-toggle i').className = newTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+}
+
+// Změna jazyků
+function changeLanguage(lang) {
+    if (translations[lang]) {
+        document.getElementById("heroTitle").innerText = translations[lang].heroT;
+        document.getElementById("heroText").innerText = translations[lang].heroP;
+        document.getElementById("faqTitle").innerText = translations[lang].faq;
+        localStorage.setItem("selectedLang", lang);
+    }
+}
+
+// FAQ akordeon animace
+function toggleFaq(element) {
+    const answer = element.nextElementSibling;
+    const icon = element.querySelector('i');
+    if (answer.style.maxHeight) {
+        answer.style.maxHeight = null;
+        answer.style.paddingTop = "0";
+        icon.style.transform = "rotate(0deg)";
+    } else {
+        answer.style.maxHeight = answer.scrollHeight + "px";
+        icon.style.transform = "rotate(180deg)";
+    }
+}
+
+// Správa Toast Notifikací
+function showToast(text) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerText = text;
+    container.appendChild(toast);
+    setTimeout(() => { toast.remove(); }, 4000);
+}
+
+// Objednávkový systém
+function openOrderModal(packageName) {
+    document.getElementById("selectedPackage").value = packageName;
+    document.getElementById("modalTitle").innerText = `Objednávka balíčku: ${packageName}`;
+    document.getElementById("orderModal").style.display = "flex";
+}
+function closeOrderModal() { document.getElementById("orderModal").style.display = "none"; }
+
+function submitOrder() {
+    const webhookUrl = localStorage.getItem("webhook") || "";
+    const redirectUrl = localStorage.getItem("googleForms") || "https://forms.google.com";
+    
+    const pName = document.getElementById("selectedPackage").value;
+    const name = document.getElementById("orderName").value;
+    const discord = document.getElementById("orderDiscord").value;
+    const email = document.getElementById("orderEmail").value;
+    const details = document.getElementById("orderDetails").value;
+    const note = document.getElementById("orderNote").value;
+
+    if(!name || !discord || !email || !details) {
+        showToast("⚠️ Vyplňte prosím všechna povinná pole.");
+        return;
+    }
+
+    // Příprava dat pro Discord Webhook
+    const discordPayload = {
+        embeds: [{
+            title: "🚀 Nová Objednávka na Webu!",
+            color: 5793266,
+            fields: [
+                { name: "Balíček", value: pName, inline: true },
+                { name: "Jméno", value: name, inline: true },
+                { name: "Discord", value: discord, inline: true },
+                { name: "E-mail", value: email, inline: true },
+                { name: "Co chce vytvořit", value: details },
+                { name: "Poznámka", value: note || "Žádná" }
+            ],
+            timestamp: new Date()
+        }]
+    };
+
+    if (webhookUrl) {
+        fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(discordPayload)
+        }).then(() => {
+            showToast("✅ Objednávka odeslána na Discord! Přesměrovávám...");
+            setTimeout(() => { window.location.href = redirectUrl; }, 1500);
+        }).catch(() => {
+            showToast("❌ Chyba při odesílání na Webhook.");
+        });
+    } else {
+        showToast("⚠️ Není nastaven Discord Webhook v admin panelu. Přesměrovávám...");
+        setTimeout(() => { window.location.href = redirectUrl; }, 1500);
+    }
+}
+
+// Administrační Logika
+function openAdminLogin() { document.getElementById("loginBox").style.display = "flex"; }
+.function closeLogin() { document.getElementById("loginBox").style.display = "none"; }
+
+function loginAdmin() {
+    let u = document.getElementById("adminUser").value;
+    let p = document.getElementById("adminPass").value;
+    if (u === ADMIN_USERNAME && p === ADMIN_PASSWORD) {
+        closeLogin();
+        document.getElementById("adminPanel").style.display = "block";
+    } else {
+        showToast("❌ Špatné přihlašovací údaje.");
+    }
+}
+function closeAdmin() { document.getElementById("adminPanel").style.display = "none"; }
+
+function loadSettings() {
+    // Načtení témat
+    if(localStorage.getItem('theme') === 'light') toggleTheme();
+    if(localStorage.getItem('selectedLang')) {
+        const lang = localStorage.getItem('selectedLang');
+        document.getElementById("langSelect").value = lang;
+        changeLanguage(lang);
+    }
+
+    // Načtení textů z LocalStorage nebo fallback na výchozí
+    document.getElementById("name1").innerText = localStorage.getItem("name1") || "Start";
+    document.getElementById("price1").innerText = localStorage.getItem("price1") || "300 Kč";
+    document.getElementById("name2").innerText = localStorage.getItem("name2") || "Medium";
+    document.getElementById("price2").innerText = localStorage.getItem("price2") || "750 Kč";
+    document.getElementById("name3").innerText = localStorage.getItem("name3") || "Pro";
+    document.getElementById("price3").innerText = localStorage.getItem("price3") || "1500 Kč";
+    
+    document.getElementById("stat1").innerText = localStorage.getItem("stat1") || "200+";
+    document.getElementById("statLabel1").innerText = localStorage.getItem("statLabel1") || "Hotových serverů";
+    document.getElementById("stat2").innerText = localStorage.getItem("stat2") || "50+";
+    document.getElementById("statLabel2").innerText = localStorage.getItem("statLabel2") || "Vlastních botů";
+
+    if(localStorage.getItem("heroTitle")) document.getElementById("heroTitle").innerText = localStorage.getItem("heroTitle");
+    if(localStorage.getItem("heroText")) document.getElementById("heroText").innerText = localStorage.getItem("heroText");
+
+    // Naplnění hodnot do admin formulářů
+    document.
