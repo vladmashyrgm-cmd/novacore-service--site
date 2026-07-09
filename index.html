@@ -45,7 +45,6 @@ body {
     overflow-x: hidden;
 }
 
-/* Animované částicové pozadí na plátně */
 #particle-canvas {
     position: fixed;
     top: 0;
@@ -56,7 +55,6 @@ body {
     pointer-events: none;
 }
 
-/* Animovaný vlastní kurzor */
 .custom-cursor {
     width: 20px;
     height: 20px;
@@ -79,7 +77,6 @@ body {
     z-index: 100000;
 }
 
-/* Úvodní načítací animace (Loader) */
 #loader {
     position: fixed;
     top: 0;
@@ -104,7 +101,6 @@ body {
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* Header & Navigace */
 header {
     display: flex;
     justify-content: space-between;
@@ -127,7 +123,7 @@ header {
 nav {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
 }
 .nav-btn {
     padding: 10px 18px;
@@ -144,6 +140,12 @@ nav {
     transform: translateY(-3px);
     filter: brightness(1.2);
 }
+.nav-btn.secondary {
+    background: var(--card);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    box-shadow: none;
+}
 .theme-toggle, .lang-select {
     background: var(--card);
     border: 1px solid var(--glass-border);
@@ -153,7 +155,6 @@ nav {
     cursor: pointer;
 }
 
-/* Hero Sekce */
 .hero {
     text-align: center;
     padding: 120px 20px 80px 20px;
@@ -175,7 +176,6 @@ nav {
     margin: auto;
 }
 
-/* Statistiky / Počítadla */
 .stats-container {
     display: flex;
     justify-content: center;
@@ -199,64 +199,72 @@ nav {
     color: var(--accent);
 }
 
-/* Glassmorphism Ceník s Neon Efekty */
 .pricing {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 30px;
-    padding: 50px;
+    gap: 25px;
+    padding: 50px 20px;
 }
 .card {
-    width: 320px;
+    width: 280px;
     background: var(--card);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    padding: 35px;
+    padding: 30px 25px;
     border-radius: 24px;
     border: 1px solid var(--glass-border);
     transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s, border-color 0.3s;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 .card:hover {
     transform: translateY(-12px);
     border-color: var(--blue);
     box-shadow: var(--neon-glow);
 }
+.card.featured {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+}
 .card h2 {
     text-align: center;
-    margin-bottom: 20px;
-    font-size: 26px;
+    margin-bottom: 15px;
+    font-size: 24px;
 }
 .price {
-    font-size: 42px;
+    font-size: 36px;
     text-align: center;
     font-weight: bold;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     color: #fff;
     text-shadow: 0 0 10px rgba(255,255,255,0.2);
 }
 [data-theme="light"] .price { color: var(--text); }
 .features {
     list-style: none;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
+    flex-grow: 1;
 }
 .features li {
-    padding: 12px 0;
+    padding: 10px 0;
     border-bottom: 1px solid rgba(255,255,255,0.05);
     display: flex;
     align-items: center;
     gap: 10px;
+    font-size: 14px;
 }
 .buy {
     width: 100%;
-    padding: 16px;
+    padding: 14px;
     border: none;
     border-radius: 14px;
     background: var(--blue);
     color: white;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
     cursor: pointer;
     transition: 0.3s;
@@ -267,7 +275,6 @@ nav {
     box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6);
 }
 
-/* FAQ sekce */
 .faq-section {
     max-width: 800px;
     margin: 60px auto;
@@ -297,7 +304,6 @@ nav {
     color: #aaa;
 }
 
-/* Moderní Objednávkový Formulář (Modal) */
 .modal {
     display: none;
     position: fixed;
@@ -329,7 +335,6 @@ nav {
     color: var(--text);
 }
 
-/* Toast Notifikace */
 .toast-container {
     position: fixed;
     bottom: 20px;
@@ -347,7 +352,6 @@ nav {
 }
 @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
-/* Administrace */
 .admin-panel {
     display: none;
     position: fixed;
@@ -382,7 +386,7 @@ nav {
 .loginContent button { width: 100%; padding: 15px; border: none; border-radius: 10px; background: var(--blue); color: white; font-weight: bold; cursor: pointer;}
 
 @media (max-width: 768px) {
-    header { padding: 20px; }
+    header { padding: 20px; flex-direction: column; gap: 15px; }
     .hero h1 { font-size: 38px; }
     .pricing { padding: 20px; }
     .admin-panel { width: 100%; }
@@ -414,7 +418,17 @@ nav {
             <option value="pl">🇵🇱 PL</option>
         </select>
         <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
-        <button class="nav-btn" onclick="openAdminLogin()">Administrace</button>
+        
+        <div id="authMenu" style="display: flex; gap: 10px;">
+            <button class="nav-btn secondary" onclick="openAuthModal('login')">Přihlásit se</button>
+            <button class="nav-btn" onclick="openAuthModal('register')">Registrace</button>
+        </div>
+        <div id="userMenu" style="display: none; align-items: center; gap: 10px;">
+            <span id="welcomeText" style="font-weight: bold; color: var(--accent);"></span>
+            <button class="nav-btn secondary" onclick="logoutUser()">Odhlásit</button>
+        </div>
+
+        <button class="nav-btn" style="background:#2c2f33;" onclick="openAdminLogin()">Admin</button>
     </nav>
 </header>
 
@@ -426,7 +440,7 @@ nav {
 <div class="stats-container" data-aos="fade-up">
     <div class="stat-box">
         <div class="stat-number" id="stat1">200+</div>
-        <div id="statLabel1">Hotových serverů</div>
+        <div id="statLabel1">Serverů</div>
     </div>
     <div class="stat-box">
         <div class="stat-number" id="stat2">50+</div>
@@ -443,9 +457,11 @@ nav {
         <h2 id="name1">Start</h2>
         <div class="price" id="price1">300 Kč</div>
         <ul class="features">
-            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f1_1">Základní server</span></li>
-            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f1_2">Nastavení rolí</span></li>
-            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f1_3">Kanály & Práva</span></li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Kompletní struktura kanálů</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Nastavení rolí a hierarchie</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Základní permise (práva)</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Integrace hudebních botů</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Základní uvítací zpráva</li>
         </ul>
         <button class="buy" onclick="openOrderModal('Start')">Objednat</button>
     </div>
@@ -454,22 +470,44 @@ nav {
         <h2 id="name2">Medium</h2>
         <div class="price" id="price2">750 Kč</div>
         <ul class="features">
-            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f2_1">Vše ze Startu</span></li>
-            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f2_2">Ticket systém</span></li>
-            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f2_3">Pokročilý design</span></li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Vše z balíčku Start</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Propojený Ticket systém</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Pokročilý design (emoji & fonty)</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Ochrana proti raidům a spamu</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Auto-role po připojení</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Levelovací systém pro členy</li>
         </ul>
         <button class="buy" onclick="openOrderModal('Medium')">Objednat</button>
     </div>
 
-    <div class="card" data-aos="fade-up" data-aos-delay="300">
+    <div class="card featured" data-aos="fade-up" data-aos-delay="300">
         <h2 id="name3">Pro</h2>
         <div class="price" id="price3">1500 Kč</div>
         <ul class="features">
-            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f3_1">Vše z Medium</span></li>
-            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f3_2">Bot na míru</span></li>
-            <li><i class="fas fa-check" style="color:var(--green)"></i> <span id="f3_3">Propojení s API</span></li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Vše z balíčku Medium</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Vlastní Discord Bot na míru</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Propojení s externí API</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Verifikační systém (proti botům)</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Statistiky serveru do hlasových kanálů</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Stream & YouTube notifikace</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Podpora na 14 dní zdarma</li>
         </ul>
-        <button class="buy" onclick="openOrderModal('Pro')">Objednat</button>
+        <button class="buy" style="background: linear-gradient(45deg, var(--blue), var(--accent));" onclick="openOrderModal('Pro')">Objednat</button>
+    </div>
+
+    <div class="card" data-aos="fade-up" data-aos-delay="400">
+        <h2 id="name4">Ultra</h2>
+        <div class="price" id="price4">3000 Kč</div>
+        <ul class="features">
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Vše z balíčku Pro</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Pokročilý Ekonomický systém</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Propojení s webem / databází</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Custom branding & grafika serveru</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Kompletní nastavení Store / Plateb</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Doživotní technická podpora</li>
+            <li><i class="fas fa-check" style="color:var(--green)"></i> Hostování bota na 3 měsíce zdarma</li>
+        </ul>
+        <button class="buy" onclick="openOrderModal('Ultra')">Objednat</button>
     </div>
 </section>
 
@@ -484,6 +522,16 @@ nav {
         <div class="faq-answer"><p style="padding-bottom:20px;">Podrobnosti o platbě s vámi vyřešíme po odeslání formuláře na základě vašich preferencí.</p></div>
     </div>
 </section>
+
+<div class="modal" id="authModal">
+    <div class="modal-content" style="max-width: 400px;">
+        <h2 id="authModalTitle">Přihlášení</h2>
+        <input type="text" id="authUsername" placeholder="Uživatelské jméno" required>
+        <input type="password" id="authPassword" placeholder="Heslo" required>
+        <button class="buy" id="authSubmitBtn" onclick="handleAuthSubmit()">Pokračovat</button>
+        <button class="buy closeAdmin" style="margin-top:10px;" onclick="closeAuthModal()">Zrušit</button>
+    </div>
+</div>
 
 <div class="modal" id="orderModal">
     <div class="modal-content">
@@ -524,6 +572,8 @@ nav {
         <input id="editName2"><input id="editPrice2">
         <label>Balíček 3 Název / Cena</label>
         <input id="editName3"><input id="editPrice3">
+        <label>Balíček 4 Název / Cena</label>
+        <input id="editName4"><input id="editPrice4">
 
         <h3>Statistiky</h3>
         <input id="editStat1" placeholder="Statistika 1"><input id="editStatLabel1" placeholder="Popisek 1">
@@ -532,7 +582,7 @@ nav {
         <h3>Integrace a Odkazy</h3>
         <label>Discord Webhook URL</label>
         <input id="webhookLink">
-        <label>Google Forms / Následné přesměrování URL</label>
+        <label>Google Forms URL</label>
         <input id="googleFormsLink">
         
         <h3>Web Texty (CS verze)</h3>
@@ -548,9 +598,11 @@ nav {
 
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-// Konfigurace Admina
 const ADMIN_USERNAME = "admin";
 const ADMIN_PASSWORD = "V9#Discord2026!";
+
+let currentAuthAction = 'login';
+let loggedInUser = null;
 
 const translations = {
     cs: { heroT: "Vytvoř si profesionální Discord server", heroP: "Kompletní tvorba Discord serverů, botů a automatizace na míru.", faq: "Často kladené otázky" },
@@ -560,7 +612,6 @@ const translations = {
     pl: { heroT: "Stwórz profesjonalny serwer Discord", heroP: "Kompletne tworzenie serwerów Discord, botów i automatyzacji.", faq: "Najczęściej zadawane pytania" }
 };
 
-// Okamžité skrytí loaderu a postupné načtení efektů
 window.addEventListener('load', () => {
     const loader = document.getElementById('loader');
     if (loader) {
@@ -568,17 +619,17 @@ window.addEventListener('load', () => {
         setTimeout(() => { loader.style.display = 'none'; }, 400);
     }
     
-    // Načtení zbytku skriptů s mírným zpožděním pro bleskový start
     setTimeout(() => {
         if (typeof AOS !== 'undefined') {
             AOS.init({ duration: 800, once: true });
         }
+        checkUserSession();
         loadSettings();
         initParticles();
     }, 50);
 });
 
-// Sledování vlastního kurzoru
+// Sledování kurzoru
 const cursor = document.getElementById('cursor');
 const cursorDot = document.getElementById('cursor-dot');
 document.addEventListener('mousemove', (e) => {
@@ -614,6 +665,7 @@ function toggleFaq(element) {
         icon.style.transform = "rotate(0deg)";
     } else {
         answer.style.maxHeight = answer.scrollHeight + "px";
+        answer.style.paddingTop = "0";
         icon.style.transform = "rotate(180deg)";
     }
 }
@@ -627,7 +679,74 @@ function showToast(text) {
     setTimeout(() => { toast.remove(); }, 4000);
 }
 
+// Autentizační logika (Login / Registrace)
+function openAuthModal(action) {
+    currentAuthAction = action;
+    document.getElementById("authModalTitle").innerText = action === 'login' ? 'Přihlášení' : 'Registrace nového účtu';
+    document.getElementById("authSubmitBtn").innerText = action === 'login' ? 'Přihlásit se' : 'Zaregistrovat se';
+    document.getElementById("authUsername").value = "";
+    document.getElementById("authPassword").value = "";
+    document.getElementById("authModal").style.display = "flex";
+}
+function closeAuthModal() { document.getElementById("authModal").style.display = "none"; }
+
+function handleAuthSubmit() {
+    const u = document.getElementById("authUsername").value.trim();
+    const p = document.getElementById("authPassword").value;
+
+    if(!u || !p) {
+        showToast("⚠️ Vyplňte uživatelské jméno a heslo.");
+        return;
+    }
+
+    if(currentAuthAction === 'register') {
+        if(localStorage.getItem("user_" + u)) {
+            showToast("❌ Tento uživatel již existuje.");
+            return;
+        }
+        localStorage.setItem("user_" + u, p);
+        showToast("✅ Registrace úspěšná! Nyní se můžete přihlásit.");
+        openAuthModal('login');
+    } else {
+        const savedPassword = localStorage.getItem("user_" + u);
+        if(savedPassword && savedPassword === p) {
+            loggedInUser = u;
+            sessionStorage.setItem("activeUser", u);
+            checkUserSession();
+            closeAuthModal();
+            showToast(`👋 Vítej zpět, ${u}!`);
+        } else {
+            showToast("❌ Nesprávné jméno nebo heslo.");
+        }
+    }
+}
+
+function checkUserSession() {
+    const sessionUser = sessionStorage.getItem("activeUser");
+    if(sessionUser) {
+        loggedInUser = sessionUser;
+        document.getElementById("authMenu").style.display = "none";
+        document.getElementById("userMenu").style.display = "flex";
+        document.getElementById("welcomeText").innerText = `👤 ${loggedInUser}`;
+    } else {
+        loggedInUser = null;
+        document.getElementById("authMenu").style.display = "flex";
+        document.getElementById("userMenu").style.display = "none";
+    }
+}
+
+function logoutUser() {
+    sessionStorage.removeItem("activeUser");
+    checkUserSession();
+    showToast("ℹ️ Byl jsi odhlášen.");
+}
+
 function openOrderModal(packageName) {
+    if(!loggedInUser) {
+        showToast("🔒 Pro objednání balíčku se musíte nejdříve přihlásit!");
+        openAuthModal('login');
+        return;
+    }
     document.getElementById("selectedPackage").value = packageName;
     document.getElementById("modalTitle").innerText = `Objednávka balíčku: ${packageName}`;
     document.getElementById("orderModal").style.display = "flex";
@@ -656,6 +775,7 @@ function submitOrder() {
             color: 5793266,
             fields: [
                 { name: "Balíček", value: pName, inline: true },
+                { name: "Objednal uživatel", value: loggedInUser, inline: true },
                 { name: "Jméno", value: name, inline: true },
                 { name: "Discord", value: discord, inline: true },
                 { name: "E-mail", value: email, inline: true },
@@ -712,9 +832,11 @@ function loadSettings() {
     document.getElementById("price2").innerText = localStorage.getItem("price2") || "750 Kč";
     document.getElementById("name3").innerText = localStorage.getItem("name3") || "Pro";
     document.getElementById("price3").innerText = localStorage.getItem("price3") || "1500 Kč";
+    document.getElementById("name4").innerText = localStorage.getItem("name4") || "Ultra";
+    document.getElementById("price4").innerText = localStorage.getItem("price4") || "3000 Kč";
     
     document.getElementById("stat1").innerText = localStorage.getItem("stat1") || "200+";
-    document.getElementById("statLabel1").innerText = localStorage.getItem("statLabel1") || "Hotových serverů";
+    document.getElementById("statLabel1").innerText = localStorage.getItem("statLabel1") || "Serverů";
     document.getElementById("stat2").innerText = localStorage.getItem("stat2") || "50+";
     document.getElementById("statLabel2").innerText = localStorage.getItem("statLabel2") || "Vlastních botů";
 
@@ -727,6 +849,8 @@ function loadSettings() {
     document.getElementById("editPrice2").value = document.getElementById("price2").innerText;
     document.getElementById("editName3").value = document.getElementById("name3").innerText;
     document.getElementById("editPrice3").value = document.getElementById("price3").innerText;
+    document.getElementById("editName4").value = document.getElementById("name4").innerText;
+    document.getElementById("editPrice4").value = document.getElementById("price4").innerText;
     
     document.getElementById("editStat1").value = document.getElementById("stat1").innerText;
     document.getElementById("editStatLabel1").value = document.getElementById("statLabel1").innerText;
@@ -747,6 +871,8 @@ function saveSettings() {
     localStorage.setItem("price2", document.getElementById("editPrice2").value);
     localStorage.setItem("name3", document.getElementById("editName3").value);
     localStorage.setItem("price3", document.getElementById("editPrice3").value);
+    localStorage.setItem("name4", document.getElementById("editName4").value);
+    localStorage.setItem("price4", document.getElementById("editPrice4").value);
     
     localStorage.setItem("stat1", document.getElementById("editStat1").value);
     localStorage.setItem("statLabel1", document.getElementById("editStatLabel1").value);
@@ -764,7 +890,6 @@ function saveSettings() {
     closeAdmin();
 }
 
-// Canvas Efekt: Odlehčené Částice na pozadí (pouze 30 kusů)
 function initParticles() {
     const canvas = document.getElementById('particle-canvas');
     if (!canvas) return;
@@ -801,7 +926,6 @@ function initParticles() {
         }
     }
 
-    // Pouze 30 částic pro maximální plynulost a rychlost
     for (let i = 0; i < 30; i++) { particles.push(new Particle()); }
 
     function animate() {
