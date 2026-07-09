@@ -355,7 +355,7 @@ nav {
     width: 450px; height: 100%;
     background: #161a22;
     color: #e3e5e8;
-    overflow-auto: auto;
+    overflow-y: auto;
     padding: 30px;
     box-shadow: -5px 0 25px rgba(0,0,0,0.6);
     z-index: 999;
@@ -556,19 +556,23 @@ const ADMIN_PASSWORD = "V9#Discord2026!";
 const translations = {
     cs: { heroT: "Vytvoř si profesionální Discord server", heroP: "Kompletní tvorba Discord serverů, botů a automatizace na míru.", faq: "Často kladené otázky" },
     en: { heroT: "Create a Professional Discord Server", heroP: "Complete creation of Discord servers, bots and custom automation.", faq: "Frequently Asked Questions" },
-    de: { heroT: "Erstellen Sie einen professionellen Discord-Server", heroP: "Komplette Erstellung von Discord-Servern, Bots und Automatisierung.", faq: "Häufig gestellte Fragen" },
+    de: { heroT: "Erstellen Sie einen professionellen Discord-Server", heroP: "Komplette Erstellung von Discord-Servern, Bots und Automatisierung.", faq: "Automatisierung" },
     sk: { heroT: "Vytvor si profesionálny Discord server", heroP: "Kompletná tvorba Discord serverov, botov a automatizácie na mieru.", faq: "Často kladené otázky" },
     pl: { heroT: "Stwórz profesjonalny serwer Discord", heroP: "Kompletne tworzenie serwerów Discord, botów i automatyzacji.", faq: "Najczęściej zadawane pytania" }
 };
 
 // Inicializace animací a odstranění loaderu
-window.addEventListener('DOMContentLoaded', () => {
-    AOS.init({ duration: 1000, once: true });
-    setTimeout(() => {
-        const loader = document.getElementById('loader');
+window.addEventListener('load', () => {
+    if (typeof AOS !== 'undefined') {
+        AOS.init({ duration: 1000, once: true });
+    }
+    
+    const loader = document.getElementById('loader');
+    if (loader) {
         loader.style.opacity = '0';
-        setTimeout(() => loader.style.display = 'none', 500);
-    }, 800);
+        setTimeout(() => { loader.style.display = 'none'; }, 500);
+    }
+    
     loadSettings();
     initParticles();
 });
@@ -650,7 +654,6 @@ function submitOrder() {
         return;
     }
 
-    // Příprava dat pro Discord Webhook
     const discordPayload = {
         embeds: [{
             title: "🚀 Nová Objednávka na Webu!",
@@ -686,7 +689,7 @@ function submitOrder() {
 
 // Administrační Logika
 function openAdminLogin() { document.getElementById("loginBox").style.display = "flex"; }
-.function closeLogin() { document.getElementById("loginBox").style.display = "none"; }
+function closeLogin() { document.getElementById("loginBox").style.display = "none"; }
 
 function loginAdmin() {
     let u = document.getElementById("adminUser").value;
@@ -701,7 +704,6 @@ function loginAdmin() {
 function closeAdmin() { document.getElementById("adminPanel").style.display = "none"; }
 
 function loadSettings() {
-    // Načtení témat
     if(localStorage.getItem('theme') === 'light') toggleTheme();
     if(localStorage.getItem('selectedLang')) {
         const lang = localStorage.getItem('selectedLang');
@@ -709,7 +711,6 @@ function loadSettings() {
         changeLanguage(lang);
     }
 
-    // Načtení textů z LocalStorage nebo fallback na výchozí
     document.getElementById("name1").innerText = localStorage.getItem("name1") || "Start";
     document.getElementById("price1").innerText = localStorage.getItem("price1") || "300 Kč";
     document.getElementById("name2").innerText = localStorage.getItem("name2") || "Medium";
@@ -725,5 +726,95 @@ function loadSettings() {
     if(localStorage.getItem("heroTitle")) document.getElementById("heroTitle").innerText = localStorage.getItem("heroTitle");
     if(localStorage.getItem("heroText")) document.getElementById("heroText").innerText = localStorage.getItem("heroText");
 
-    // Naplnění hodnot do admin formulářů
-    document.
+    document.getElementById("editName1").value = document.getElementById("name1").innerText;
+    document.getElementById("editPrice1").value = document.getElementById("price1").innerText;
+    document.getElementById("editName2").value = document.getElementById("name2").innerText;
+    document.getElementById("editPrice2").value = document.getElementById("price2").innerText;
+    document.getElementById("editName3").value = document.getElementById("name3").innerText;
+    document.getElementById("editPrice3").value = document.getElementById("price3").innerText;
+    
+    document.getElementById("editStat1").value = document.getElementById("stat1").innerText;
+    document.getElementById("editStatLabel1").value = document.getElementById("statLabel1").innerText;
+    document.getElementById("editStat2").value = document.getElementById("stat2").innerText;
+    document.getElementById("editStatLabel2").value = document.getElementById("statLabel2").innerText;
+
+    document.getElementById("editHeroTitle").value = document.getElementById("heroTitle").innerText;
+    document.getElementById("editHeroText").value = document.getElementById("heroText").innerText;
+
+    document.getElementById("webhookLink").value = localStorage.getItem("webhook") || "";
+    document.getElementById("googleFormsLink").value = localStorage.getItem("googleForms") || "";
+}
+
+function saveSettings() {
+    localStorage.setItem("name1", document.getElementById("editName1").value);
+    localStorage.setItem("price1", document.getElementById("editPrice1").value);
+    localStorage.setItem("name2", document.getElementById("editName2").value);
+    localStorage.setItem("price2", document.getElementById("editPrice2").value);
+    localStorage.setItem("name3", document.getElementById("editName3").value);
+    localStorage.setItem("price3", document.getElementById("editPrice3").value);
+    
+    localStorage.setItem("stat1", document.getElementById("editStat1").value);
+    localStorage.setItem("statLabel1", document.getElementById("editStatLabel1").value);
+    localStorage.setItem("stat2", document.getElementById("editStat2").value);
+    localStorage.setItem("statLabel2", document.getElementById("editStatLabel2").value);
+
+    localStorage.setItem("heroTitle", document.getElementById("editHeroTitle").value);
+    localStorage.setItem("heroText", document.getElementById("editHeroText").value);
+
+    localStorage.setItem("webhook", document.getElementById("webhookLink").value);
+    localStorage.setItem("googleForms", document.getElementById("googleFormsLink").value);
+
+    loadSettings();
+    showToast("💾 Nastavení úspěšně uloženo a aplikováno!");
+    closeAdmin();
+}
+
+// Canvas Efekt: Gradient + Částice na pozadí
+function initParticles() {
+    const canvas = document.getElementById('particle-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2 + 1;
+            this.speedX = Math.random() * 0.5 - 0.25;
+            this.speedY = Math.random() * 0.5 - 0.25;
+            this.alpha = Math.random() * 0.5 + 0.2;
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+            if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+        }
+        draw() {
+            ctx.fillStyle = `rgba(88, 101, 242, ${this.alpha})`;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    for (let i = 0; i < 60; i++) { particles.push(new Particle()); }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+</script>
+</body>
+</html>
