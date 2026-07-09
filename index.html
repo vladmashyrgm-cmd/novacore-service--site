@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discord Studio 2026</title>
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+    --bg: #0e1118;
+    --card: rgba(27, 32, 46, 0.7);
+    --blue: #5865F2;
+    --green: #23a55a;
+    --text: #e3e5e8;
+    --accent: #00f2fe;
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --neon-glow: 0 0 15px rgba(88, 101, 242, 0.6);
+}
+
+[data-theme="light"] {
+    --bg: #f4f6f9;
+    --card: rgba(255, 255, 255, 0.7);
+    --blue: #5865F2;
+    --green: #23a55a;
+    --text: #11141c;
+    --accent: #ff007f;
+    --glass-border: rgba(0, 0, 0, 0.05);
+    --neon-glow: 0 0 15px rgba(88, 101, 242, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background 0.3s, color 0.3s;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+}
+
+#particle-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.custom-cursor {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--blue);
+    border-radius: 50%;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 100000;
+    transition: width 0.2s, height 0.2s, background-color 0.2s;
+}
+.custom-cursor-dot {
+    width: 4px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 100000;
+}
+
+#loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0e1118;
+    z-index: 999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transition: opacity 0.4s ease, visibility 0.4s;
+}
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(88, 101, 242, 0.2);
+    border-top: 5px solid var(--blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    background: rgba(17, 20, 28, 0.7);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--glass-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+    background: linear-gradient(45deg, #fff, var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.nav-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: var(--blue);
+    color: white;
+    font-weight: bold;
+    transition: 0.3s;
+    box-shadow: var(--neon-glow);
+}
+.nav-btn:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.2);
+}
+.nav-btn.secondary {
+    background: var(--card);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    box-shadow: none;
+}
+.theme-toggle, .lang-select {
+    background: var(--card);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.hero {
+    text-align: center;
+    padding: 120px 20px 80px 20px;
+}
+.hero h1 {
+    font-size: 55px;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #fff, var(--blue), var(--accent));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 4s linear infinite;
+}
+@keyframes shine { to { background-position: 200% center; } }
+.hero p {
+    font-size: 20px;
+    color: #aaa;
+    max-width: 700px;
+    margin: auto;
+}
+
+.stats-container {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    padding: 30px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+.stat-box {
+    text-align: center;
+    background: var(--card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    padding: 20px 40px;
+    border-radius: 15px;
+    min-width: 180px;
+}
+.stat-number {
+    font-size: 35px;
+    font-weight: bold;
+    color: var(--accent);
+}
+
+.pricing {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+    padding: 50px 20px;
+}
+.card {
+    width: 280px;
+    background: var(--card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 30px 25px;
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s, border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.card:hover {
+    transform: translateY(-12px);
+    border-color: var(--blue);
+    box-shadow: var(--neon-glow);
+}
+.card.featured {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+}
+.card h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+.price {
+    font-size: 36px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255,255,255,0.2);
+}
+[data-theme="light"] .price { color: var(--text); }
+.features {
+    list-style: none;
+    margin-bottom: 25px;
+    flex-grow: 1;
+}
+.features li {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+.buy {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    background: var(--blue);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(88, 101, 242, 0.4);
+}
+.buy:hover {
+    background: #4752c4;
+    box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6);
+}
+
+.faq-section {
+    max-width: 800px;
+    margin: 60px auto;
+    padding: 0 20px;
+}
+.faq-section h2 { text-align: center; margin-bottom: 30px; }
+.faq-item {
+    background: var(--card);
+    border: 1px solid var(--glass-border);
+    margin-bottom: 15px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.faq-question {
+    padding: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.faq-answer {
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    color: #aaa;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    justify-content: center; align-items: center;
+    z-index: 200;
+}
+.modal-content {
+    background: var(--card);
+    border: 1px solid var(--glass-border);
+    padding: 40px;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: var(--neon-glow);
+}
+.modal-content h2 { margin-bottom: 20px; }
+.modal-content input, .modal-content textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    background: rgba(0,0,0,0.2);
+    color: var(--text);
+}
+
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10000;
+}
+.toast {
+    background: var(--green);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    margin-top: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: slideIn 0.3s ease forwards;
+}
+@keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+.admin-panel {
+    display: none;
+    position: fixed;
+    top: 0; right: 0;
+    width: 450px; height: 100%;
+    background: #161a22;
+    color: #e3e5e8;
+    overflow-y: auto;
+    padding: 30px;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.6);
+    z-index: 999;
+}
+.admin-panel input, .admin-panel textarea {
+    width: 100%; padding: 10px;
+    margin: 8px 0;
+    border: none; border-radius: 8px; background: #11141c; color: white;
+}
+.admin-panel button {
+    margin-top: 15px;
+    width: 100%; padding: 14px;
+    border: none; background: var(--green); color: white;
+    font-weight: bold; border-radius: 10px; cursor: pointer;
+}
+.closeAdmin { background: #c0392b !important; }
+
+.loginBox {
+    display: none; position: fixed;
+    top: 0; left: 0; width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    justify-content: center; align-items: center; z-index: 9999;
+}
+.loginContent { background: #1b202e; padding: 40px; border-radius: 20px; width: 350px;
+    text-align: center;}
+.loginContent input { width: 100%; padding: 15px; margin: 15px 0; border: none; border-radius: 10px; background: #11141c;
+    color: white;}
+.loginContent button { width: 100%; padding: 15px; border: none; border-radius: 10px; background: var(--blue); color: white; font-weight: bold;
+    cursor: pointer;}
+
+@media (max-width: 768px) {
+    header { padding: 20px; flex-direction: column; gap: 15px; }
+    .hero h1 { font-size: 38px; }
+    .pricing { padding: 20px; }
+    .admin-panel { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+<div class="custom-cursor" id="cursor"></div>
+<div class="custom-cursor-dot" id="cursor-dot"></div>
+
+<div id="loader">
+    <div class="spinner"></div>
+    <p style="margin-top: 15px; color: #5865F2; font-weight: bold;">Loading Studio...</p>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<header>
+    <div class="logo">Discord Studio</div>
+    <nav>
+        <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
+            <option value="cs">🇨🇿 CZ</option>
+            <option value="en">🇬🇧 EN</option>
+        </select>
+        <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+        
+        <div id="authMenu" style="display: flex; gap: 10px;">
+            <button class="nav-btn secondary" id="navLoginBtn" onclick="openAuthModal('login')">Přihlásit se</button>
+            <button class="nav-btn" id="navRegisterBtn" onclick="openAuthModal('register')">Registrace</button>
+        </div>
+        <div id="userMenu" style="display: none; align-items: center; gap: 10px;">
+            <span id="welcomeText" style="font-weight: bold; color: var(--accent);"></span>
+            <button class="nav-btn secondary" id="navLogoutBtn" onclick="logoutUser()">Odhlásit</button>
+        </div>
+
+        <button class="nav-btn" style="background:#2c2f33;" id="navAdminBtn" onclick="openAdminLogin()">Admin</button>
+    </nav>
+</header>
+
+<section class="hero" data-aos="zoom-in">
+    <h1 id="heroTitle">Vytvoř si profesionální Discord server</h1>
+    <p id="heroText">Kompletní tvorba Discord serverů, botů a automatizace na míru.</p>
+</section>
+
+<div class="stats-container" data-aos="fade-up">
+    <div class="stat-box">
+        <div class="stat-number" id="stat1">200+</div>
+        <div id="statLabel1">Serverů</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-number" id="stat2">50+</div>
+        <div id="statLabel2">Vlastních botů</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-number" id="stat3">99%</div>
+        <div id="statLabel3">Spokojenost</div>
+    </div>
+</div>
+
+<section class="pricing">
+    <div class="card" data-aos="fade-up" data-aos-delay="100">
+        <h2 id="name1">Start</h2>
+        <div class="price" id="price1">300 Kč</div>
+        <ul class="features" id="features1"></ul>
+        <button class="buy btn-order" onclick="openOrderModal('Start')">Objednat</button>
+    </div>
+
+    <div class="card" data-aos="fade-up" data-aos-delay="200">
+        <h2 id="name2">Medium</h2>
+        <div class="price" id="price2">750 Kč</div>
+        <ul class="features" id="features2"></ul>
+        <button class="buy btn-order" onclick="openOrderModal('Medium')">Objednat</button>
+    </div>
+
+    <div class="card featured" data-aos="fade-up" data-aos-delay="300">
+        <h2 id="name3">Pro</h2>
+        <div class="price" id="price3">1500 Kč</div>
+        <ul class="features" id="features3"></ul>
+        <button class="buy btn-order" style="background: linear-gradient(45deg, var(--blue), var(--accent));" onclick="openOrderModal('Pro')">Objednat</button>
+    </div>
+
+    <div class="card" data-aos="fade-up" data-aos-delay="400">
+        <h2 id="name4">Ultra</h2>
+        <div class="price" id="price4">3000 Kč</div>
+        <ul class="features" id="features4"></ul>
+        <button class="buy btn-order" onclick="openOrderModal('Ultra')">Objednat</button>
+    </div>
+</section>
+
+<section class="faq-section" data-aos="fade-up">
+    <h2 id="faqTitle">Často kladené otázky</h2>
+    <div id="faqContainer"></div>
+</section>
+
+<div class="modal" id="authModal">
+    <div class="modal-content" style="max-width: 400px;">
+        <h2 id="authModalTitle">Přihlášení</h2>
+        <input type="text" id="authUsername" placeholder="Uživatelské jméno" required>
+        <input type="password" id="authPassword" placeholder="Heslo" required>
+        <button class="buy" id="authSubmitBtn" onclick="handleAuthSubmit()">Pokračovat</button>
+        <button class="buy closeAdmin" id="authCancelBtn" style="margin-top:10px;" onclick="closeAuthModal()">Zrušit</button>
+    </div>
+</div>
+
+<div class="modal" id="orderModal">
+    <div class="modal-content">
+        <h2 id="modalTitle">Objednávka balíčku</h2>
+        <input type="hidden" id="selectedPackage">
+        <label id="lblOrderName">Jméno / Nick</label>
+        <input type="text" id="orderName" required>
+        <label id="lblOrderDiscord">Discord Tag / ID</label>
+        <input type="text" id="orderDiscord" required>
+        <label id="lblOrderEmail">E-mail</label>
+        <input type="email" id="orderEmail" required>
+        <label id="lblOrderDetails">Co chceš vytvořit (detaily)</label>
+        <textarea id="orderDetails" rows="3" required></textarea>
+        <label id="lblOrderNote">Poznámka</label>
+        <textarea id="orderNote" rows="2"></textarea>
+        <button class="buy" id="orderSubmitBtn" onclick="submitOrder()">Odeslat</button>
+        <button class="buy closeAdmin" id="orderCancelBtn" style="margin-top:10px;" onclick="closeOrderModal()">Zrušit</button>
+    </div>
+</div>
+
+<div class="loginBox" id="loginBox">
+    <div class="loginContent">
+        <h2 id="lblAdminTitle">Administrátor</h2>
+        <input type="text" id="adminUser" placeholder="Uživatelské jméno">
+        <input type="password" id="adminPass" placeholder="Heslo">
+        <button onclick="loginAdmin()" id="adminLoginBtn">Přihlásit se</button>
+        <button class="buy closeAdmin" style="margin-top:15px;" id="adminCloseBtn" onclick="closeLogin()">Zavřít</button>
+    </div>
+</div>
+
+<div class="admin-panel" id="adminPanel">
+    <h2>Administrace</h2>
+    <div style="max-height: 80vh; overflow-y: auto; padding-right: 5px;">
+        <h3>Ceník & Texty</h3>
+        <label>Balíček 1 Název / Cena</label>
+        <input id="editName1"><input id="editPrice1">
+        <label>Balíček 2 Název / Cena</label>
+        <input id="editName2"><input id="editPrice2">
+        <label>Balíček 3 Název / Cena</label>
+        <input id="editName3"><input id="editPrice3">
+        <label>Balíček 4 Název / Cena</label>
+        <input id="editName4"><input id="editPrice4">
+
+        <h3>Statistiky</h3>
+        <input id="editStat1" placeholder="Statistika 1"><input id="editStatLabel1" placeholder="Popisek 1">
+        <input id="editStat2" placeholder="Statistika 2"><input id="editStatLabel2" placeholder="Popisek 2">
+
+        <h3>Integrace a Odkazy</h3>
+        <label>Discord Webhook URL</label>
+        <input id="webhookLink">
+        
+        <h3>Web Texty</h3>
+        <label>Hero Nadpis</label>
+        <input id="editHeroTitle">
+        <label>Hero Popisek</label>
+        <textarea id="editHeroText"></textarea>
+
+        <button onclick="saveSettings()">Uložit změny</button>
+        <button class="closeAdmin" onclick="closeAdmin()">Zavřít panel</button>
+    </div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "V9#Discord2026!";
+
+let currentAuthAction = 'login';
+let loggedInUser = null;
+
+// --- IMPLEMENTACE DATABÁZE DO PROHLÍŽEČE (Která funguje na GitHub Pages) ---
+const DB = {
+    getUsers: () => JSON.parse(localStorage.getItem('db_uzivatele') || '{}'),
+    saveUsers: (users) => localStorage.setItem('db_uzivatele', JSON.stringify(users)),
+    getSettings: () => JSON.parse(localStorage.getItem('db_nastaveni') || '{}'),
+    saveSettings: (settings) => localStorage.setItem('db_nastaveni', JSON.stringify(settings))
+};
+
+const translations = {
+    cs: {
+        heroT: "Vytvoř si profesionální Discord server",
+        heroP: "Kompletní tvorba Discord serverů, botů a automatizace na míru.",
+        faqTitle: "Často kladené otázky",
+        stat1: "Serverů", stat2: "Vlastních botů", stat3: "Spokojenost",
+        navLogin: "Přihlásit se", navRegister: "Registrace", navLogout: "Odhlásit", btnOrder: "Objednat",
+        authLoginTitle: "Přihlášení", authRegisterTitle: "Registrace", authSubmitL: "Přihlásit se", authSubmitR: "Zaregistrovat",
+        toastAuthFields: "⚠️ Vyplňte jméno a heslo.", toastUserExists: "❌ Uživatel již existuje.", toastRegSuccess: "✅ Registrace úspěšná! Můžete se přihlásit.",
+        toastLoginSuccess: "👋 Vítej zpět, ", toastWrongAuth: "❌ Nesprávné jméno nebo heslo.", toastLogout: "ℹ️ Byl jsi odhlášen.",
+        toastLoginRequired: "🔒 Pro objednání se musíte nejdříve přihlásit!", toastOrderSuccess: "✅ Objednávka odeslána!",
+        packages: {
+            p1: ["Kompletní struktura kanálů", "Nastavení rolí a hierarchie", "Základní práva", "Uvítací zpráva"],
+            p2: ["Vše ze Startu", "Ticket systém pro podporu", "Pokročilý design (emoji)", "Ochrana proti spamu"],
+            p3: ["Vše z Medium", "Vlastní Discord Bot na míru", "Verifikační systém", "Podpora 14 dní zdarma"],
+            p4: ["Vše z Pro", "Pokročilý Ekonomický systém", "Custom branding & grafika", "Doživotní podpora"]
+        },
+        faqs: [
+            { q: "Jak dlouho trvá vytvoření?", a: "Většinou máme server hotový do 3 až 5 dnů." },
+            { q: "Jak probíhá platba?", a: "Podrobnosti s vámi vyřešíme individuálně po odeslání objednávky." }
+        ]
+    },
+    en: {
+        heroT: "Create a Professional Discord Server",
+        heroP: "Complete creation of Discord servers, bots and custom automation.",
+        faqTitle: "Frequently Asked Questions",
+        stat1: "Servers", stat2: "Custom Bots", stat3: "Satisfaction",
+        navLogin: "Log In", navRegister: "Register", navLogout: "Log Out", btnOrder: "Order Now",
+        authLoginTitle: "Login", authRegisterTitle: "Registration", authSubmitL: "Log In", authSubmitR: "Register",
+        toastAuthFields: "⚠️ Enter username and password.", toastUserExists: "❌ User already exists.", toastRegSuccess: "✅ Registered successfully!",
+        toastLoginSuccess: "👋 Welcome, ", toastWrongAuth: "❌ Incorrect credentials.", toastLogout: "ℹ️ Logged out.",
+        toastLoginRequired: "🔒 Please log in first!", toastOrderSuccess: "✅ Order sent successfully!",
+        packages: {
+            p1: ["Complete channel structure", "Roles & hierarchy", "Basic permissions", "Welcome message"],
+            p2: ["Everything from Start", "Ticket support system", "Advanced emoji design", "Anti-spam guard"],
+            p3: ["Everything from Medium", "Custom Discord Bot", "Verification system", "14 days free support"],
+            p4: ["Everything from Pro", "Economy system", "Custom branding & graphics", "Lifetime support"]
+        },
+        faqs: [
+            { q: "How long does it take?", a: "Usually 3 to 5 days depending on complexity." },
+            { q: "How does payment work?", a: "We will discuss payment details after submission." }
+        ]
+    }
+};
+
+function getActiveLang() { return document.getElementById("langSelect").value; }
+
+function changeLanguage(lang) {
+    const trans = translations[lang] || translations.cs;
+    document.getElementById("heroTitle").innerText = trans.heroT;
+    document.getElementById("heroText").innerText = trans.heroP;
+    document.getElementById("faqTitle").innerText = trans.faqTitle;
+    document.getElementById("statLabel1").innerText = trans.stat1;
+    document.getElementById("statLabel2").innerText = trans.stat2;
+    document.getElementById("statLabel3").innerText = trans.stat3;
+    document.getElementById("navLoginBtn").innerText = trans.navLogin;
+    document.getElementById("navRegisterBtn").innerText = trans.navRegister;
+    document.getElementById("navLogoutBtn").innerText = trans.navLogout;
+    document.querySelectorAll(".btn-order").forEach(btn => btn.innerText = trans.btnOrder);
+    renderPackages(lang); renderFaqs(lang);
+}
+
+function renderPackages(lang) {
+    const trans = translations[lang] || translations.cs;
+    for (let i = 1; i <= 4; i++) {
+        const ul = document.getElementById("features" + i);
+        if(!ul) continue; ul.innerHTML = "";
+        (trans.packages["p" + i] || []).forEach(f => {
+            const li = document.createElement("li");
+            li.innerHTML = `<i class="fas fa-check" style="color:var(--green)"></i> ${f}`;
+            ul.appendChild(li);
+        });
+    }
+}
+
+function renderFaqs(lang) {
+    const trans = translations[lang] || translations.cs;
+    const container = document.getElementById("faqContainer");
+    if(!container) return; container.innerHTML = "";
+    trans.faqs.forEach(faq => {
+        const item = document.createElement("div"); item.className = "faq-item";
+        const q = document.createElement("div"); q.className = "faq-question";
+        q.innerHTML = `${faq.q} <i class="fas fa-chevron-down"></i>`;
+        const a = document.createElement("div"); a.className = "faq-answer"; a.innerText = faq.a;
+        q.addEventListener("click", () => {
+            const isOpen = a.style.maxHeight && a.style.maxHeight !== "0px";
+            document.querySelectorAll(".faq-answer").forEach(ans => { ans.style.maxHeight = "0px"; ans.style.padding = "0 20px"; });
+            if(!isOpen) { a.style.maxHeight = a.scrollHeight + 40 + "px"; a.style.padding = "20px"; }
+        });
+        item.appendChild(q); item.appendChild(a); container.appendChild(item);
+    });
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme");
+    const target = current === "light" ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", target);
+    document.querySelector(".theme-toggle i").className = target === "light" ? "fas fa-sun" : "fas fa-moon";
+}
+
+function showToast(keyOrText, isDirectText = false) {
+    const container = document.getElementById("toastContainer");
+    const toast = document.createElement("div"); toast.className = "toast";
+    toast.innerText = isDirectText ? keyOrText : (translations[getActiveLang()][keyOrText] || keyOrText);
+    container.appendChild(toast);
+    setTimeout(() => { toast.style.animation = "slideIn 0.3s ease reverse forwards"; setTimeout(() => toast.remove(), 300); }, 4000);
+}
+
+function openAuthModal(action) {
+    currentAuthAction = action;
+    document.getElementById("authModal").style.display = "flex";
+    const trans = translations[getActiveLang()] || translations.cs;
+    document.getElementById("authModalTitle").innerText = action === 'login' ? trans.authLoginTitle : trans.authRegisterTitle;
+    document.getElementById("authSubmitBtn").innerText = action === 'login' ? trans.authSubmitL : trans.authSubmitR;
+}
+function closeAuthModal() { document.getElementById("authModal").style.display = "none"; }
+
+// --- LOGIKA DATABÁZE ZDE ---
+function handleAuthSubmit() {
+    const u = document.getElementById("authUsername").value.trim();
+    const p = document.getElementById("authPassword").value.trim();
+    if(!u || !p) { showToast("toastAuthFields"); return; }
+    
+    let users = DB.getUsers();
+    
+    if (currentAuthAction === 'register') {
+        if (users[u]) { showToast("toastUserExists"); return; }
+        users[u] = p;
+        DB.saveUsers(users);
+        showToast("toastRegSuccess");
+        openAuthModal('login');
+    } else {
+        if (users[u] && users[u] === p) {
+            loggedInUser = u;
+            sessionStorage.setItem("activeUser", u);
+            checkUserSession(); closeAuthModal();
+            showToast(translations[getActiveLang()].toastLoginSuccess + u + "!", true);
+        } else {
+            showToast("toastWrongAuth");
+        }
+    }
+}
+
+function checkUserSession() {
+    const sessionUser = sessionStorage.getItem("activeUser");
+    if(sessionUser) {
+        loggedInUser = sessionUser;
+        document.getElementById("authMenu").style.display = "none";
+        document.getElementById("userMenu").style.display = "flex";
+        document.getElementById("welcomeText").innerText = `👤 ${loggedInUser}`;
+    } else {
+        loggedInUser = null;
+        document.getElementById("authMenu").style.display = "flex";
+        document.getElementById("userMenu").style.display = "none";
+    }
+}
+
+function logoutUser() { sessionStorage.removeItem("activeUser"); checkUserSession(); showToast("toastLogout"); }
+
+function openOrderModal(packName) {
+    if(!loggedInUser) { showToast("toastLoginRequired"); return; }
+    document.getElementById("selectedPackage").value = packName;
+    document.getElementById("orderModal").style.display = "flex";
+}
+function closeOrderModal() { document.getElementById("orderModal").style.display = "none"; }
+
+async function submitOrder() {
+    const webhookUrl = document.getElementById("webhookLink").value;
+    const pack = document.getElementById("selectedPackage").value;
+    const name = document.getElementById("orderName").value;
+    const discord = document.getElementById("orderDiscord").value;
+    const email = document.getElementById("orderEmail").value;
+    const details = document.getElementById("orderDetails").value;
+    
+    if(!name || !discord || !email || !details) { showToast("Vyplňte prosím všechna povinná pole.", true); return; }
+
+    if(webhookUrl) {
+        const msg = {
+            embeds: [{
+                title: "📦 Nová Objednávka: " + pack,
+                color: 5814783,
+                fields: [
+                    { name: "Jméno", value: name, inline: true },
+                    { name: "Discord", value: discord, inline: true },
+                    { name: "E-mail", value: email, inline: true },
+                    { name: "Detaily projektu", value: details }
+                ],
+                timestamp: new Date()
+            }]
+        };
+        fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(msg) });
+    }
+    
+    showToast("toastOrderSuccess");
+    closeOrderModal();
+}
+
+function openAdminLogin() { document.getElementById("loginBox").style.display = "flex"; }
+function closeLogin() { document.getElementById("loginBox").style.display = "none"; }
+
+function loginAdmin() {
+    const u = document.getElementById("adminUser").value;
+    const p = document.getElementById("adminPass").value;
+    if(u === ADMIN_USERNAME && p === ADMIN_PASSWORD) {
+        closeLogin(); document.getElementById("adminPanel").style.display = "block";
+        loadSettingsFromDB();
+    } else { showToast("toastWrongAdmin"); }
+}
+function closeAdmin() { document.getElementById("adminPanel").style.display = "none"; }
+
+function saveSettings() {
+    const settings = {
+        name1: document.getElementById("editName1").value, price1: document.getElementById("editPrice1").value,
+        name2: document.getElementById("editName2").value, price2: document.getElementById("editPrice2").value,
+        name3: document.getElementById("editName3").value, price3: document.getElementById("editPrice3").value,
+        name4: document.getElementById("editName4").value, price4: document.getElementById("editPrice4").value,
+        stat1: document.getElementById("editStat1").value, statLabel1: document.getElementById("editStatLabel1").value,
+        stat2: document.getElementById("editStat2").value, statLabel2: document.getElementById("editStatLabel2").value,
+        webhook: document.getElementById("webhookLink").value,
+        heroTitle: document.getElementById("editHeroTitle").value, heroText: document.getElementById("editHeroText").value,
+    };
+    DB.saveSettings(settings);
+    showToast("Změny uloženy do databáze!", true);
+    applySettingsToUI(settings);
+}
+
+function loadSettingsFromDB() {
+    const settings = DB.getSettings();
+    if (Object.keys(settings).length > 0) {
+        document.getElementById("editName1").value = settings.name1 || ""; document.getElementById("editPrice1").value = settings.price1 || "";
+        document.getElementById("editName2").value = settings.name2 || ""; document.getElementById("editPrice2").value = settings.price2 || "";
+        document.getElementById("editName3").value = settings.name3 || ""; document.getElementById("editPrice3").value = settings.price3 || "";
+        document.getElementById("editName4").value = settings.name4 || ""; document.getElementById("editPrice4").value = settings.price4 || "";
+        document.getElementById("editStat1").value = settings.stat1 || ""; document.getElementById("editStatLabel1").value = settings.statLabel1 || "";
+        document.getElementById("editStat2").value = settings.stat2 || ""; document.getElementById("editStatLabel2").value = settings.statLabel2 || "";
+        document.getElementById("webhookLink").value = settings.webhook || "";
+        document.getElementById("editHeroTitle").value = settings.heroTitle || ""; document.getElementById("editHeroText").value = settings.heroText || "";
+        applySettingsToUI(settings);
+    }
+}
+
+function applySettingsToUI(settings) {
+    if(settings.name1) document.getElementById("name1").innerText = settings.name1; if(settings.price1) document.getElementById("price1").innerText = settings.price1;
+    if(settings.name2) document.getElementById("name2").innerText = settings.name2; if(settings.price2) document.getElementById("price2").innerText = settings.price2;
+    if(settings.name3) document.getElementById("name3").innerText = settings.name3; if(settings.price3) document.getElementById("price3").innerText = settings.price3;
+    if(settings.name4) document.getElementById("name4").innerText = settings.name4; if(settings.price4) document.getElementById("price4").innerText = settings.price4;
+    if(settings.stat1) document.getElementById("stat1").innerText = settings.stat1; if(settings.statLabel1) document.getElementById("statLabel1").innerText = settings.statLabel1;
+    if(settings.stat2) document.getElementById("stat2").innerText = settings.stat2; if(settings.statLabel2) document.getElementById("statLabel2").innerText = settings.statLabel2;
+    if(settings.heroTitle) document.getElementById("heroTitle").innerText = settings.heroTitle; if(settings.heroText) document.getElementById("heroText").innerText = settings.heroText;
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("loader").style.opacity = "0";
+    setTimeout(() => document.getElementById("loader").style.visibility = "hidden", 400);
+    AOS.init({ duration: 800, once: true });
+    changeLanguage("cs"); checkUserSession(); loadSettingsFromDB();
+});
+
+// Částice na pozadí
+const canvas = document.getElementById('particle-canvas');
+if (canvas) {
+    const ctx = canvas.getContext('2d'); let particles = [];
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2 + 1; this.speedX = Math.random() * 0.4 - 0.2; this.speedY = Math.random() * 0.4 - 0.2; this.alpha = Math.random() * 0.4 + 0.2;
+        }
+        update() { this.x += this.speedX; this.y += this.speedY; if (this.x > canvas.width || this.x < 0) this.speedX *= -1; if (this.y > canvas.height || this.y < 0) this.speedY *= -1; }
+        draw() { ctx.fillStyle = `rgba(88, 101, 242, ${this.alpha})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+    }
+    for(let i=0; i<60; i++) particles.push(new Particle());
+    function animate() { ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+    animate();
+}
+
+// Custom kurzor
+const cursor = document.getElementById("cursor"); const cursorDot = document.getElementById("cursor-dot");
+window.addEventListener("mousemove", (e) => { cursor.style.left = e.clientX + "px"; cursor.style.top = e.clientY + "px"; cursorDot.style.left = e.clientX + "px"; cursorDot.style.top = e.clientY + "px"; });
+</script>
+</body>
+</html>
