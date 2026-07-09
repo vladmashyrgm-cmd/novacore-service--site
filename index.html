@@ -307,8 +307,7 @@ nav {
 .modal {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0; width: 100%; height: 100%;
+    top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.6);
     backdrop-filter: blur(8px);
     justify-content: center; align-items: center;
@@ -366,13 +365,11 @@ nav {
     z-index: 999;
 }
 .admin-panel input, .admin-panel textarea {
-    width: 100%; padding: 10px;
-    margin: 8px 0;
+    width: 100%; padding: 10px; margin: 8px 0;
     border: none; border-radius: 8px; background: #11141c; color: white;
 }
 .admin-panel button {
-    margin-top: 15px;
-    width: 100%; padding: 14px;
+    margin-top: 15px; width: 100%; padding: 14px;
     border: none; background: var(--green); color: white;
     font-weight: bold; border-radius: 10px; cursor: pointer;
 }
@@ -380,17 +377,13 @@ nav {
 
 .loginBox {
     display: none; position: fixed;
-    top: 0; left: 0; width: 100%;
-    height: 100%;
+    top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.8);
     justify-content: center; align-items: center; z-index: 9999;
 }
-.loginContent { background: #1b202e; padding: 40px; border-radius: 20px; width: 350px;
-    text-align: center;}
-.loginContent input { width: 100%; padding: 15px; margin: 15px 0; border: none; border-radius: 10px; background: #11141c;
-    color: white;}
-.loginContent button { width: 100%; padding: 15px; border: none; border-radius: 10px; background: var(--blue); color: white; font-weight: bold;
-    cursor: pointer;}
+.loginContent { background: #1b202e; padding: 40px; border-radius: 20px; width: 350px; text-align: center;}
+.loginContent input { width: 100%; padding: 15px; margin: 15px 0; border: none; border-radius: 10px; background: #11141c; color: white;}
+.loginContent button { width: 100%; padding: 15px; border: none; border-radius: 10px; background: var(--blue); color: white; font-weight: bold; cursor: pointer;}
 
 @media (max-width: 768px) {
     header { padding: 20px; flex-direction: column; gap: 15px; }
@@ -420,9 +413,12 @@ nav {
         <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
             <option value="cs">🇨🇿 CZ</option>
             <option value="en">🇬🇧 EN</option>
+            <option value="de">🇩🇪 DE</option>
+            <option value="sk">🇸🇰 SK</option>
+            <option value="pl">🇵🇱 PL</option>
         </select>
         <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
-        
+         
         <div id="authMenu" style="display: flex; gap: 10px;">
             <button class="nav-btn secondary" id="navLoginBtn" onclick="openAuthModal('login')">Přihlásit se</button>
             <button class="nav-btn" id="navRegisterBtn" onclick="openAuthModal('register')">Registrace</button>
@@ -461,28 +457,28 @@ nav {
         <h2 id="name1">Start</h2>
         <div class="price" id="price1">300 Kč</div>
         <ul class="features" id="features1"></ul>
-        <button class="buy btn-order" onclick="openOrderModal('Start')">Objednat</button>
+        <button class="buy btn-order" id="btnOrder1" onclick="openOrderModal('Start')">Objednat</button>
     </div>
 
     <div class="card" data-aos="fade-up" data-aos-delay="200">
         <h2 id="name2">Medium</h2>
         <div class="price" id="price2">750 Kč</div>
         <ul class="features" id="features2"></ul>
-        <button class="buy btn-order" onclick="openOrderModal('Medium')">Objednat</button>
+        <button class="buy btn-order" id="btnOrder2" onclick="openOrderModal('Medium')">Objednat</button>
     </div>
 
     <div class="card featured" data-aos="fade-up" data-aos-delay="300">
         <h2 id="name3">Pro</h2>
         <div class="price" id="price3">1500 Kč</div>
         <ul class="features" id="features3"></ul>
-        <button class="buy btn-order" style="background: linear-gradient(45deg, var(--blue), var(--accent));" onclick="openOrderModal('Pro')">Objednat</button>
+        <button class="buy btn-order" id="btnOrder3" style="background: linear-gradient(45deg, var(--blue), var(--accent));" onclick="openOrderModal('Pro')">Objednat</button>
     </div>
 
     <div class="card" data-aos="fade-up" data-aos-delay="400">
         <h2 id="name4">Ultra</h2>
         <div class="price" id="price4">3000 Kč</div>
         <ul class="features" id="features4"></ul>
-        <button class="buy btn-order" onclick="openOrderModal('Ultra')">Objednat</button>
+        <button class="buy btn-order" id="btnOrder4" onclick="openOrderModal('Ultra')">Objednat</button>
     </div>
 </section>
 
@@ -515,7 +511,7 @@ nav {
         <textarea id="orderDetails" rows="3" required></textarea>
         <label id="lblOrderNote">Poznámka</label>
         <textarea id="orderNote" rows="2"></textarea>
-        <button class="buy" id="orderSubmitBtn" onclick="submitOrder()">Odeslat</button>
+        <button class="buy" id="orderSubmitBtn" onclick="submitOrder()">Pokračovat</button>
         <button class="buy closeAdmin" id="orderCancelBtn" style="margin-top:10px;" onclick="closeOrderModal()">Zrušit</button>
     </div>
 </div>
@@ -550,8 +546,10 @@ nav {
         <h3>Integrace a Odkazy</h3>
         <label>Discord Webhook URL</label>
         <input id="webhookLink">
-        
-        <h3>Web Texty</h3>
+        <label>Google Forms URL</label>
+        <input id="googleFormsLink">
+         
+        <h3>Web Texty (CS verze)</h3>
         <label>Hero Nadpis</label>
         <input id="editHeroTitle">
         <label>Hero Popisek</label>
@@ -569,15 +567,9 @@ const ADMIN_PASSWORD = "V9#Discord2026!";
 
 let currentAuthAction = 'login';
 let loggedInUser = null;
+let currentLang = 'cs';
 
-// --- IMPLEMENTACE DATABÁZE DO PROHLÍŽEČE (Která funguje na GitHub Pages) ---
-const DB = {
-    getUsers: () => JSON.parse(localStorage.getItem('db_uzivatele') || '{}'),
-    saveUsers: (users) => localStorage.setItem('db_uzivatele', JSON.stringify(users)),
-    getSettings: () => JSON.parse(localStorage.getItem('db_nastaveni') || '{}'),
-    saveSettings: (settings) => localStorage.setItem('db_nastaveni', JSON.stringify(settings))
-};
-
+// Kompletní balík všech lokalizačních překladů pro celý web
 const translations = {
     cs: {
         heroT: "Vytvoř si profesionální Discord server",
@@ -585,19 +577,19 @@ const translations = {
         faqTitle: "Často kladené otázky",
         stat1: "Serverů", stat2: "Vlastních botů", stat3: "Spokojenost",
         navLogin: "Přihlásit se", navRegister: "Registrace", navLogout: "Odhlásit", btnOrder: "Objednat",
-        authLoginTitle: "Přihlášení", authRegisterTitle: "Registrace", authSubmitL: "Přihlásit se", authSubmitR: "Zaregistrovat",
-        toastAuthFields: "⚠️ Vyplňte jméno a heslo.", toastUserExists: "❌ Uživatel již existuje.", toastRegSuccess: "✅ Registrace úspěšná! Můžete se přihlásit.",
-        toastLoginSuccess: "👋 Vítej zpět, ", toastWrongAuth: "❌ Nesprávné jméno nebo heslo.", toastLogout: "ℹ️ Byl jsi odhlášen.",
-        toastLoginRequired: "🔒 Pro objednání se musíte nejdříve přihlásit!", toastOrderSuccess: "✅ Objednávka odeslána!",
+        authLoginTitle: "Přihlášení", authRegisterTitle: "Registrace nového účtu", authSubmitL: "Přihlásit se", authSubmitR: "Zaregistrovat se", authCancel: "Zrušit",
+        lblOrderName: "Jméno / Nick", lblOrderDiscord: "Discord Tag / ID", lblOrderEmail: "E-mail", lblOrderDetails: "Co chceš vytvořit (detaily)", lblOrderNote: "Poznámka", lblOrderSubmit: "Pokračovat", lblOrderCancel: "Zrušit",
+        lblAdminTitle: "Administrátor", lblAdminBtn: "Přihlásit se", lblAdminClose: "Zavřít",
+        toastFields: "⚠️ Vyplňte prosím všechna povinná pole.", toastAuthFields: "⚠️ Vyplňte uživatelské jméno a heslo.", toastUserExists: "❌ Tento uživatel již existuje.", toastRegSuccess: "✅ Registrace úspěšná! Nyní se můžete přihlásit.", toastLoginSuccess: "👋 Vítej zpět, ", toastWrongAuth: "❌ Nesprávné jméno nebo heslo.", toastLogout: "ℹ️ Byl jsi odhlášen.", toastLoginRequired: "🔒 Pro objednání balíčku se musíte nejdříve přihlásit!", toastOrderSuccess: "✅ Objednávka odeslána! Přesměrovávám...", toastWebhookErr: "❌ Chyba při odesílání na Webhook.", toastNoWebhook: "⚠️ Není nastaven Discord Webhook v admin panelu. Přesměrovávám...", toastWrongAdmin: "❌ Špatné přihlašovací údaje.",
         packages: {
-            p1: ["Kompletní struktura kanálů", "Nastavení rolí a hierarchie", "Základní práva", "Uvítací zpráva"],
-            p2: ["Vše ze Startu", "Ticket systém pro podporu", "Pokročilý design (emoji)", "Ochrana proti spamu"],
-            p3: ["Vše z Medium", "Vlastní Discord Bot na míru", "Verifikační systém", "Podpora 14 dní zdarma"],
-            p4: ["Vše z Pro", "Pokročilý Ekonomický systém", "Custom branding & grafika", "Doživotní podpora"]
+            p1: ["Kompletní struktura kanálů", "Nastavení rolí a hierarchie", "Základní permise (práva)", "Integrace hudebních botů", "Základní uvítací zpráva"],
+            p2: ["Vše z balíčku Start", "Propojený Ticket systém", "Pokročilý design (emoji & fonty)", "Ochrana proti raidům a spamu", "Auto-role po připojení", "Levelovací systém pro členy"],
+            p3: ["Vše z balíčku Medium", "Vlastní Discord Bot na míru", "Propojení s externí API", "Verifikační systém (proti botům)", "Statistiky serveru do hlasových kanálů", "Stream & YouTube notifikace", "Podpora na 14 dní zdarma"],
+            p4: ["Vše z balíčku Pro", "Pokročilý Ekonomický systém", "Propojení s webem / databází", "Custom branding & grafika serveru", "Kompletní nastavení Store / Plateb", "Doživotní technická podpora", "Hostování bota na 3 měsíce zdarma"]
         },
         faqs: [
-            { q: "Jak dlouho trvá vytvoření?", a: "Většinou máme server hotový do 3 až 5 dnů." },
-            { q: "Jak probíhá platba?", a: "Podrobnosti s vámi vyřešíme individuálně po odeslání objednávky." }
+            { q: "Jak dlouho trvá vytvoření?", a: "Většinou máme server hotový do 3 až 5 dnů v závislosti na komplexnosti zadání." },
+            { q: "Jak probíhá platba?", a: "Podrobnosti o platbe s vámi vyřešíme po odeslání formuláře na základě vašich preferencí." }
         ]
     },
     en: {
@@ -606,258 +598,503 @@ const translations = {
         faqTitle: "Frequently Asked Questions",
         stat1: "Servers", stat2: "Custom Bots", stat3: "Satisfaction",
         navLogin: "Log In", navRegister: "Register", navLogout: "Log Out", btnOrder: "Order Now",
-        authLoginTitle: "Login", authRegisterTitle: "Registration", authSubmitL: "Log In", authSubmitR: "Register",
-        toastAuthFields: "⚠️ Enter username and password.", toastUserExists: "❌ User already exists.", toastRegSuccess: "✅ Registered successfully!",
-        toastLoginSuccess: "👋 Welcome, ", toastWrongAuth: "❌ Incorrect credentials.", toastLogout: "ℹ️ Logged out.",
-        toastLoginRequired: "🔒 Please log in first!", toastOrderSuccess: "✅ Order sent successfully!",
+        authLoginTitle: "Login", authRegisterTitle: "Register New Account", authSubmitL: "Log In", authSubmitR: "Register", authCancel: "Cancel",
+        lblOrderName: "Name / Nickname", lblOrderDiscord: "Discord Tag / ID", lblOrderEmail: "E-mail", lblOrderDetails: "What do you want to create (details)", lblOrderNote: "Note", lblOrderSubmit: "Continue", lblOrderCancel: "Cancel",
+        lblAdminTitle: "Administrator", lblAdminBtn: "Log In", lblAdminClose: "Close",
+        toastFields: "⚠️ Please fill in all required fields.", toastAuthFields: "⚠️ Please enter your username and password.", toastUserExists: "❌ This user already exists.", toastRegSuccess: "✅ Registration successful! You can now log in.", toastLoginSuccess: "👋 Welcome back, ", toastWrongAuth: "❌ Incorrect username or password.", toastLogout: "ℹ️ You have been logged out.", toastLoginRequired: "🔒 You must log in first to order a package!", toastOrderSuccess: "✅ Order sent! Redirecting...", toastWebhookErr: "❌ Error sending to Webhook.", toastNoWebhook: "⚠️ Discord Webhook is not set in the admin panel. Redirecting...", toastWrongAdmin: "❌ Incorrect admin credentials.",
         packages: {
-            p1: ["Complete channel structure", "Roles & hierarchy", "Basic permissions", "Welcome message"],
-            p2: ["Everything from Start", "Ticket support system", "Advanced emoji design", "Anti-spam guard"],
-            p3: ["Everything from Medium", "Custom Discord Bot", "Verification system", "14 days free support"],
-            p4: ["Everything from Pro", "Economy system", "Custom branding & graphics", "Lifetime support"]
+            p1: ["Complete channel structure", "Roles and hierarchy setup", "Basic permissions setup", "Music bots integration", "Basic welcome message"],
+            p2: ["Everything from Start package", "Integrated Ticket system", "Advanced design (emojis & fonts)", "Anti-raid and anti-spam protection", "Auto-role on join", "Leveling system for members"],
+            p3: ["Everything from Medium package", "Custom Discord Bot made to order", "Connection with external API", "Verification system (anti-bot)", "Server statistics in voice channels", "Stream & YouTube notifications", "Free support for 14 days"],
+            p4: ["Everything from Pro package", "Advanced Economy system", "Website / database integration", "Custom branding & server graphics", "Full Store / Payment setup", "Lifetime technical support", "Free bot hosting for 3 months"]
         },
         faqs: [
-            { q: "How long does it take?", a: "Usually 3 to 5 days depending on complexity." },
-            { q: "How does payment work?", a: "We will discuss payment details after submission." }
+            { q: "How long does it take?", a: "We usually have the server ready within 3 to 5 days, depending on the complexity of the project." },
+            { q: "How does the payment work?", a: "We will handle the payment details with you after submitting the form based on your preferences." }
+        ]
+    },
+    de: {
+        heroT: "Erstellen Sie einen professionellen Discord-Server",
+        heroP: "Komplette Erstellung von Discord-Servern, Bots und Automatisierung.",
+        faqTitle: "Häufig gestellte Fragen",
+        stat1: "Server", stat2: "Eigene Bots", stat3: "Zufriedenheit",
+        navLogin: "Einloggen", navRegister: "Registrieren", navLogout: "Ausloggen", btnOrder: "Bestellen",
+        authLoginTitle: "Einloggen", authRegisterTitle: "Neues Konto registrieren", authSubmitL: "Einloggen", authSubmitR: "Registrieren", authCancel: "Abbrechen",
+        lblOrderName: "Name / Spitzname", lblOrderDiscord: "Discord Tag / ID", lblOrderEmail: "E-mail", lblOrderDetails: "Was möchten Sie erstellen (Details)", lblOrderNote: "Notiz", lblOrderSubmit: "Weiter", lblOrderCancel: "Abbrechen",
+        lblAdminTitle: "Administrator", lblAdminBtn: "Einloggen", lblAdminClose: "Schließen",
+        toastFields: "⚠️ Bitte füllen Sie alle Pflichtfelder aus.", toastAuthFields: "⚠️ Bitte Benutzernamen und Passwort eingeben.", toastUserExists: "❌ Dieser Benutzer existiert bereits.", toastRegSuccess: "✅ Registrierung erfolgreich! Sie können sich jetzt einloggen.", toastLoginSuccess: "👋 Willkommen zurück, ", toastWrongAuth: "❌ Falscher Name oder Passwort.", toastLogout: "ℹ️ Sie wurden abgemeldet.", toastLoginRequired: "🔒 Sie müssen sich zuerst einloggen, um ein Paket zu bestellen!", toastOrderSuccess: "✅ Bestellung gesendet! Weiterleitung...", toastWebhookErr: "❌ Fehler beim Senden an Webhook.", toastNoWebhook: "⚠️ Discord-Webhook ist im Admin-Panel nicht eingerichtet. Weiterleitung...", toastWrongAdmin: "❌ Falsche Admin-Zugangsdaten.",
+        packages: {
+            p1: ["Komplette Kanalstruktur", "Rollen- und Hierarchie-Setup", "Grundlegende Berechtigungen", "Musik-Bots-Integration", "Einfache Begrüßungsnachricht"],
+            p2: ["Alles aus dem Start-Paket", "Integriertes Ticket-System", "Fortgeschrittenes Design (Emojis & Schriftarten)", "Anti-Raid- und Anti-Spam-Schutz", "Auto-Rolle beim Beitreten", "Levelsystem für Mitglieder"],
+            p3: ["Alles aus dem Medium-Paket", "Eigener maßgeschneiderter Discord-Bot", "Verbindung mit externer API", "Verifizierungssystem (Anti-Bot)", "Serverstatistiken in Sprachkanälen", "Stream- und YouTube-Benachrichtigungen", "Kostenloser Support für 14 Tage"],
+            p4: ["Alles aus dem Pro-Paket", "Erweitertes Wirtschaftssystem", "Website- / Datenbankintegration", "Individuelles Branding & Servergrafiken", "Vollständiges Store- / Zahlungsetup", "Lebenslanger technischer Support", "Kostenloses Bot-Hosting für 3 Monate"]
+        },
+        faqs: [
+            { q: "Wie lange dauert es?", a: "In der Regel haben wir den Server innerhalb von 3 bis 5 Tagen fertig, abhängig von der Komplexität des Auftrags." },
+            { q: "Wie läuft die Zahlung ab?", a: "Die Zahlungsdetails klären wir mit Ihnen nach dem Absenden des Formulars basierend auf Ihren Präferenzen." }
+        ]
+    },
+    sk: {
+        heroT: "Vytvor si profesionálny Discord server",
+        heroP: "Kompletná tvorba Discord serverov, botov a automatizácie na mieru.",
+        faqTitle: "Často kladené otázky",
+        stat1: "Serverov", stat2: "Vlastných botov", stat3: "Spokojenosť",
+        navLogin: "Prihlásiť sa", navRegister: "Registrácia", navLogout: "Odhlásiť", btnOrder: "Objednať",
+        authLoginTitle: "Prihlásenie", authRegisterTitle: "Registrácia nového účtu", authSubmitL: "Prihlásiť sa", authSubmitR: "Zaregistrovať sa", authCancel: "Zrušiť",
+        lblOrderName: "Meno / Nick", lblOrderDiscord: "Discord Tag / ID", lblOrderEmail: "E-mail", lblOrderDetails: "Čo chceš vytvoriť (detaily)", lblOrderNote: "Poznámka", lblOrderSubmit: "Pokračovať", lblOrderCancel: "Zrušiť",
+        lblAdminTitle: "Administrátor", lblAdminBtn: "Prihlásiť sa", lblAdminClose: "Zatvoriť",
+        toastFields: "⚠️ Vyplňte prosím všetky povinné polia.", toastAuthFields: "⚠️ Vyplňte užívateľské meno a heslo.", toastUserExists: "❌ Tento užívateľ už existuje.", toastRegSuccess: "✅ Registrácia úspešná! Teraz sa môžete prihlásiť.", toastLoginSuccess: "👋 Vitaj späť, ", toastWrongAuth: "❌ Nesprávne meno alebo heslo.", toastLogout: "ℹ️ Bol si odhlásený.", toastLoginRequired: "🔒 Pre objednanie balíčka sa musíte najskôr prihlásiť!", toastOrderSuccess: "✅ Objednávka odoslaná! Presmerovávam...", toastWebhookErr: "❌ Chyba pri odesielaní na Webhook.", toastNoWebhook: "⚠️ Nie je nastavený Discord Webhook v admin panele. Presmerovávam...", toastWrongAdmin: "❌ Nesprávne prihlasovacie údaje.",
+        packages: {
+            p1: ["Kompletná štruktúra kanálov", "Nastavenie rolí a hierarchie", "Základné povolenia (práva)", "Integrácia hudobných botov", "Základná uvítacia správa"],
+            p2: ["Všetko z balíčka Start", "Prepojený Ticket systém", "Pokročilý dizajn (emoji & fonty)", "Ochrana proti raidom a spamu", "Auto-role po pripojení", "Levelovací systém pre členov"],
+            p3: ["Všetko z balíčka Medium", "Vlastný Discord Bot na mieru", "Prepojenie s externou API", "Verifikačný systém (proti botom)", "Štatistiky serveru do hlasových kanálov", "Stream & YouTube notifikácie", "Podpora na 14 dní zadarmo"],
+            p4: ["Všetko z balíčka Pro", "Pokročilý Ekonomický systém", "Prepojenie s webom / databázou", "Custom branding & grafika servera", "Kompletné nastavenie Store / Platieb", "Doživotná technická podpora", "Hostovanie bota na 3 mesiace zadarmo"]
+        },
+        faqs: [
+            { q: "Ako dlho trvá vytvorenie?", a: "Väčšinou máme server hotový do 3 až 5 dní v závislosti od komplexnosti zadania." },
+            { q: "Ako prebieha platba?", a: "Podrobnosti o platbe s vami vyriešime po odoslaní formulára na základe vašich preferencií." }
+        ]
+    },
+    pl: {
+        heroT: "Stwórz profesjonalny serwer Discord",
+        heroP: "Kompletne tworzenie serwerów Discord, botów i automatyzacji.",
+        faqTitle: "Najczęściej zadawane pytania",
+        stat1: "Serwerów", stat2: "Własnych botów", stat3: "Satysfakcja",
+        navLogin: "Zaloguj się", navRegister: "Rejestracja", navLogout: "Wyloguj", btnOrder: "Zamów",
+        authLoginTitle: "Logowanie", authRegisterTitle: "Zarejestruj nowe konto", authSubmitL: "Zaloguj się", authSubmitR: "Zarejestruj się", authCancel: "Anuluj",
+        lblOrderName: "Imię / Nick", lblOrderDiscord: "Discord Tag / ID", lblOrderEmail: "E-mail", lblOrderDetails: "Co chcesz stworzyć (szczegóły)", lblOrderNote: "Notatka", lblOrderSubmit: "Kontynuuj", lblOrderCancel: "Anuluj",
+        lblAdminTitle: "Administrator", lblAdminBtn: "Zaloguj się", lblAdminClose: "Zamknij",
+        toastFields: "⚠️ Proszę wypełnić wszystkie wymagane pola.", toastAuthFields: "⚠️ Proszę podać nazwę użytkownika i hasło.", toastUserExists: "❌ Taki użytkownik już istnieje.", toastRegSuccess: "✅ Rejestracja pomyślna! Możesz się teraz zalogować.", toastLoginSuccess: "👋 Witaj z powrotem, ", toastWrongAuth: "❌ Nieprawidłowa nazwa użytkownika lub hasło.", toastLogout: "ℹ️ Zostałeś wylogowany.", toastLoginRequired: "🔒 Musisz się najpierw zalogować, aby zamówić pakiet!", toastOrderSuccess: "✅ Zamówienie wysłane! Przekierowywanie...", toastWebhookErr: "❌ Błąd podczas wysyłania do Webhook.", toastNoWebhook: "⚠️ Discord Webhook nie jest ustawiony w panelu administracyjnym. Przekierowywanie...", toastWrongAdmin: "❌ Nieprawidłowe dane logowania administratora.",
+        packages: {
+            p1: ["Kompletna struktura kanałów", "Konfiguracja ról i hierarchii", "Podstawowe uprawnienia", "Integracja botów muzycznych", "Podstawowa wiadomość powitalna"],
+            p2: ["Wszystko z pakietu Start", "Zintegrowany system Ticketów", "Zaawansowany wygląd (emoji i czcionki)", "Ochrona przed raidami i spamem", "Auto-role przy dołączeniu", "System poziomów dla członków"],
+            p3: ["Wszystko z pakietu Medium", "Własny bot Discord na zamówienie", "Połączenie z zewnętrznym API", "System weryfikacji (anty-bot)", "Statystyki serwera na kanałach głosowych", "Powiadomienia Stream & YouTube", "Bezpłatne wsparcie przez 14 dni"],
+            p4: ["Wszystko z pakietu Pro", "Zaawansowany system ekonomii", "Integracja ze stroną / bazą danych", "Niestandardowy branding i grafika serwera", "Pełna konfiguracja sklepu / płatności", "Dożywotnie wsparcie techniczne", "Darmowy hosting bota przez 3 miesiące"]
+        },
+        faqs: [
+            { q: "Jak długo to trwa?", a: "Zazwyczaj serwer jest gotowy w ciągu 3 do 5 dni, w zależności od złożoności zamówienia." },
+            { q: "Jak wygląda płatność?", a: "Szczegóły płatności ustalimy z Tobą po przesłaniu formularza, na podstawie Twoich preferencji." }
         ]
     }
 };
 
-function getActiveLang() { return document.getElementById("langSelect").value; }
+window.addEventListener('load', () => {
+    const loader = document.getElementById('loader');
+    if (loader) {
+        loader.style.opacity = '0';
+        setTimeout(() => { loader.style.display = 'none'; }, 400);
+    }
+    
+    setTimeout(() => {
+        if (typeof AOS !== 'undefined') {
+            AOS.init({ duration: 800, once: true });
+        }
+        
+        // Načtení preferencí z localStorage
+        if(localStorage.getItem('theme') === 'light') {
+            document.body.setAttribute('data-theme', 'light');
+        }
+        if(localStorage.getItem('lang')) {
+            currentLang = localStorage.getItem('lang');
+            document.getElementById('langSelect').value = currentLang;
+        }
 
-function changeLanguage(lang) {
-    const trans = translations[lang] || translations.cs;
-    document.getElementById("heroTitle").innerText = trans.heroT;
-    document.getElementById("heroText").innerText = trans.heroP;
-    document.getElementById("faqTitle").innerText = trans.faqTitle;
-    document.getElementById("statLabel1").innerText = trans.stat1;
-    document.getElementById("statLabel2").innerText = trans.stat2;
-    document.getElementById("statLabel3").innerText = trans.stat3;
-    document.getElementById("navLoginBtn").innerText = trans.navLogin;
-    document.getElementById("navRegisterBtn").innerText = trans.navRegister;
-    document.getElementById("navLogoutBtn").innerText = trans.navLogout;
-    document.querySelectorAll(".btn-order").forEach(btn => btn.innerText = trans.btnOrder);
-    renderPackages(lang); renderFaqs(lang);
+        checkUserSession();
+        loadSettings();
+        initParticles();
+        renderFAQ();
+    }, 50);
+});
+
+const cursor = document.getElementById('cursor');
+const cursorDot = document.getElementById('cursor-dot');
+document.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    cursorDot.style.left = e.clientX + 'px';
+    cursorDot.style.top = e.clientY + 'px';
+});
+
+function toggleTheme() {
+    const currentTheme = document.body.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    document.body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
 }
 
-function renderPackages(lang) {
-    const trans = translations[lang] || translations.cs;
-    for (let i = 1; i <= 4; i++) {
-        const ul = document.getElementById("features" + i);
-        if(!ul) continue; ul.innerHTML = "";
-        (trans.packages["p" + i] || []).forEach(f => {
-            const li = document.createElement("li");
-            li.innerHTML = `<i class="fas fa-check" style="color:var(--green)"></i> ${f}`;
-            ul.appendChild(li);
+function showToast(message) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = message;
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+// LOKALIZACE A JAZYKY
+function changeLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    
+    const t = translations[lang];
+    
+    document.getElementById('heroTitle').innerText = t.heroT;
+    document.getElementById('heroText').innerText = t.heroP;
+    document.getElementById('faqTitle').innerText = t.faqTitle;
+    
+    document.getElementById('statLabel1').innerText = t.stat1;
+    document.getElementById('statLabel2').innerText = t.stat2;
+    document.getElementById('statLabel3').innerText = t.stat3;
+    
+    document.getElementById('navLoginBtn').innerText = t.navLogin;
+    document.getElementById('navRegisterBtn').innerText = t.navRegister;
+    document.getElementById('navLogoutBtn').innerText = t.navLogout;
+    
+    document.querySelectorAll('.btn-order').forEach(btn => btn.innerText = t.btnOrder);
+    
+    document.getElementById('lblOrderName').innerText = t.lblOrderName;
+    document.getElementById('lblOrderDiscord').innerText = t.lblOrderDiscord;
+    document.getElementById('lblOrderEmail').innerText = t.lblOrderEmail;
+    document.getElementById('lblOrderDetails').innerText = t.lblOrderDetails;
+    document.getElementById('lblOrderNote').innerText = t.lblOrderNote;
+    document.getElementById('orderSubmitBtn').innerText = t.lblOrderSubmit;
+    document.getElementById('orderCancelBtn').innerText = t.lblOrderCancel;
+    
+    document.getElementById('lblAdminTitle').innerText = t.lblAdminTitle;
+    document.getElementById('adminLoginBtn').innerText = t.lblAdminBtn;
+    document.getElementById('adminCloseBtn').innerText = t.lblAdminClose;
+
+    renderFeatures();
+    renderFAQ();
+}
+
+function renderFeatures() {
+    const p = translations[currentLang].packages;
+    for(let i = 1; i <= 4; i++) {
+        const list = document.getElementById('features' + i);
+        list.innerHTML = '';
+        p['p'+i].forEach(feat => {
+            const li = document.createElement('li');
+            li.innerHTML = `<i class="fas fa-check" style="color:var(--green)"></i> ` + feat;
+            list.appendChild(li);
         });
     }
 }
 
-function renderFaqs(lang) {
-    const trans = translations[lang] || translations.cs;
-    const container = document.getElementById("faqContainer");
-    if(!container) return; container.innerHTML = "";
-    trans.faqs.forEach(faq => {
-        const item = document.createElement("div"); item.className = "faq-item";
-        const q = document.createElement("div"); q.className = "faq-question";
-        q.innerHTML = `${faq.q} <i class="fas fa-chevron-down"></i>`;
-        const a = document.createElement("div"); a.className = "faq-answer"; a.innerText = faq.a;
-        q.addEventListener("click", () => {
-            const isOpen = a.style.maxHeight && a.style.maxHeight !== "0px";
-            document.querySelectorAll(".faq-answer").forEach(ans => { ans.style.maxHeight = "0px"; ans.style.padding = "0 20px"; });
-            if(!isOpen) { a.style.maxHeight = a.scrollHeight + 40 + "px"; a.style.padding = "20px"; }
-        });
-        item.appendChild(q); item.appendChild(a); container.appendChild(item);
+function renderFAQ() {
+    const container = document.getElementById('faqContainer');
+    container.innerHTML = '';
+    translations[currentLang].faqs.forEach(faq => {
+        const item = document.createElement('div');
+        item.className = 'faq-item';
+        item.innerHTML = `
+            <div class="faq-question" onclick="toggleFaq(this)">${faq.q} <i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer"><p style="padding-bottom:20px;">${faq.a}</p></div>
+        `;
+        container.appendChild(item);
     });
 }
 
-function toggleTheme() {
-    const current = document.documentElement.getAttribute("data-theme");
-    const target = current === "light" ? "dark" : "light";
-    document.documentElement.setAttribute("data-theme", target);
-    document.querySelector(".theme-toggle i").className = target === "light" ? "fas fa-sun" : "fas fa-moon";
+function toggleFaq(el) {
+    const answer = el.nextElementSibling;
+    if(answer.style.maxHeight) {
+        answer.style.maxHeight = null;
+        el.querySelector('i').className = 'fas fa-chevron-down';
+    } else {
+        answer.style.maxHeight = answer.scrollHeight + "px";
+        el.querySelector('i').className = 'fas fa-chevron-up';
+    }
 }
 
-function showToast(keyOrText, isDirectText = false) {
-    const container = document.getElementById("toastContainer");
-    const toast = document.createElement("div"); toast.className = "toast";
-    toast.innerText = isDirectText ? keyOrText : (translations[getActiveLang()][keyOrText] || keyOrText);
-    container.appendChild(toast);
-    setTimeout(() => { toast.style.animation = "slideIn 0.3s ease reverse forwards"; setTimeout(() => toast.remove(), 300); }, 4000);
+// AUTENTIKACE S LOCALSTORAGE
+function checkUserSession() {
+    loggedInUser = localStorage.getItem('sessionUser');
+    if(loggedInUser) {
+        document.getElementById('authMenu').style.display = 'none';
+        document.getElementById('userMenu').style.display = 'flex';
+        document.getElementById('welcomeText').innerText = loggedInUser;
+    } else {
+        document.getElementById('authMenu').style.display = 'flex';
+        document.getElementById('userMenu').style.display = 'none';
+    }
 }
 
 function openAuthModal(action) {
     currentAuthAction = action;
-    document.getElementById("authModal").style.display = "flex";
-    const trans = translations[getActiveLang()] || translations.cs;
-    document.getElementById("authModalTitle").innerText = action === 'login' ? trans.authLoginTitle : trans.authRegisterTitle;
-    document.getElementById("authSubmitBtn").innerText = action === 'login' ? trans.authSubmitL : trans.authSubmitR;
+    const modal = document.getElementById('authModal');
+    const title = document.getElementById('authModalTitle');
+    const submitBtn = document.getElementById('authSubmitBtn');
+    
+    const t = translations[currentLang];
+    title.innerText = action === 'login' ? t.authLoginTitle : t.authRegisterTitle;
+    submitBtn.innerText = action === 'login' ? t.authSubmitL : t.authSubmitR;
+    
+    modal.style.display = 'flex';
 }
-function closeAuthModal() { document.getElementById("authModal").style.display = "none"; }
 
-// --- LOGIKA DATABÁZE ZDE ---
+function closeAuthModal() {
+    document.getElementById('authModal').style.display = 'none';
+    document.getElementById('authUsername').value = '';
+    document.getElementById('authPassword').value = '';
+}
+
 function handleAuthSubmit() {
-    const u = document.getElementById("authUsername").value.trim();
-    const p = document.getElementById("authPassword").value.trim();
-    if(!u || !p) { showToast("toastAuthFields"); return; }
+    const user = document.getElementById('authUsername').value.trim();
+    const pass = document.getElementById('authPassword').value.trim();
+    const t = translations[currentLang];
     
-    let users = DB.getUsers();
+    if(!user || !pass) {
+        showToast(t.toastAuthFields);
+        return;
+    }
     
-    if (currentAuthAction === 'register') {
-        if (users[u]) { showToast("toastUserExists"); return; }
-        users[u] = p;
-        DB.saveUsers(users);
-        showToast("toastRegSuccess");
+    let users = JSON.parse(localStorage.getItem('webUsers')) || {};
+    
+    if(currentAuthAction === 'register') {
+        if(users[user]) {
+            showToast(t.toastUserExists);
+            return;
+        }
+        users[user] = pass;
+        localStorage.setItem('webUsers', JSON.stringify(users));
+        showToast(t.toastRegSuccess);
         openAuthModal('login');
     } else {
-        if (users[u] && users[u] === p) {
-            loggedInUser = u;
-            sessionStorage.setItem("activeUser", u);
-            checkUserSession(); closeAuthModal();
-            showToast(translations[getActiveLang()].toastLoginSuccess + u + "!", true);
+        if(users[user] && users[user] === pass) {
+            localStorage.setItem('sessionUser', user);
+            loggedInUser = user;
+            checkUserSession();
+            closeAuthModal();
+            showToast(t.toastLoginSuccess + user + "!");
         } else {
-            showToast("toastWrongAuth");
+            showToast(t.toastWrongAuth);
         }
     }
 }
 
-function checkUserSession() {
-    const sessionUser = sessionStorage.getItem("activeUser");
-    if(sessionUser) {
-        loggedInUser = sessionUser;
-        document.getElementById("authMenu").style.display = "none";
-        document.getElementById("userMenu").style.display = "flex";
-        document.getElementById("welcomeText").innerText = `👤 ${loggedInUser}`;
+function logoutUser() {
+    localStorage.removeItem('sessionUser');
+    loggedInUser = null;
+    checkUserSession();
+    showToast(translations[currentLang].toastLogout);
+}
+
+// ADMIN PANEL & NASTAVENÍ
+function openAdminLogin() {
+    document.getElementById('loginBox').style.display = 'flex';
+}
+function closeLogin() {
+    document.getElementById('loginBox').style.display = 'none';
+}
+function loginAdmin() {
+    const u = document.getElementById('adminUser').value;
+    const p = document.getElementById('adminPass').value;
+    if(u === ADMIN_USERNAME && p === ADMIN_PASSWORD) {
+        closeLogin();
+        document.getElementById('adminPanel').style.display = 'block';
     } else {
-        loggedInUser = null;
-        document.getElementById("authMenu").style.display = "flex";
-        document.getElementById("userMenu").style.display = "none";
+        showToast(translations[currentLang].toastWrongAdmin);
     }
 }
-
-function logoutUser() { sessionStorage.removeItem("activeUser"); checkUserSession(); showToast("toastLogout"); }
-
-function openOrderModal(packName) {
-    if(!loggedInUser) { showToast("toastLoginRequired"); return; }
-    document.getElementById("selectedPackage").value = packName;
-    document.getElementById("orderModal").style.display = "flex";
+function closeAdmin() {
+    document.getElementById('adminPanel').style.display = 'none';
 }
-function closeOrderModal() { document.getElementById("orderModal").style.display = "none"; }
 
-async function submitOrder() {
-    const webhookUrl = document.getElementById("webhookLink").value;
-    const pack = document.getElementById("selectedPackage").value;
-    const name = document.getElementById("orderName").value;
-    const discord = document.getElementById("orderDiscord").value;
-    const email = document.getElementById("orderEmail").value;
-    const details = document.getElementById("orderDetails").value;
+function saveSettings() {
+    const config = {
+        name1: document.getElementById('editName1').value,
+        price1: document.getElementById('editPrice1').value,
+        name2: document.getElementById('editName2').value,
+        price2: document.getElementById('editPrice2').value,
+        name3: document.getElementById('editName3').value,
+        price3: document.getElementById('editPrice3').value,
+        name4: document.getElementById('editName4').value,
+        price4: document.getElementById('editPrice4').value,
+        stat1: document.getElementById('editStat1').value,
+        statLabel1: document.getElementById('editStatLabel1').value,
+        stat2: document.getElementById('editStat2').value,
+        statLabel2: document.getElementById('editStatLabel2').value,
+        webhook: document.getElementById('webhookLink').value,
+        gforms: document.getElementById('googleFormsLink').value,
+        heroT: document.getElementById('editHeroTitle').value,
+        heroP: document.getElementById('editHeroText').value
+    };
+    localStorage.setItem('webConfig', JSON.stringify(config));
+    loadSettings();
+    closeAdmin();
+    showToast("✅ Nastavení uloženo.");
+}
+
+function loadSettings() {
+    const cfg = JSON.parse(localStorage.getItem('webConfig'));
+    if(!cfg) {
+        // Výchozí plnění admin políček
+        document.getElementById('editName1').value = "Start"; document.getElementById('editPrice1').value = "300 Kč";
+        document.getElementById('editName2').value = "Medium"; document.getElementById('editPrice2').value = "750 Kč";
+        document.getElementById('editName3').value = "Pro"; document.getElementById('editPrice3').value = "1500 Kč";
+        document.getElementById('editName4').value = "Ultra"; document.getElementById('editPrice4').value = "3000 Kč";
+        document.getElementById('editStat1').value = "200+"; document.getElementById('editStatLabel1').value = "Serverů";
+        document.getElementById('editStat2').value = "50+"; document.getElementById('editStatLabel2').value = "Vlastních botů";
+        document.getElementById('editHeroTitle').value = translations.cs.heroT;
+        document.getElementById('editHeroText').value = translations.cs.heroP;
+        changeLanguage(currentLang);
+        return;
+    }
     
-    if(!name || !discord || !email || !details) { showToast("Vyplňte prosím všechna povinná pole.", true); return; }
+    document.getElementById('name1').innerText = cfg.name1; document.getElementById('price1').innerText = cfg.price1;
+    document.getElementById('name2').innerText = cfg.name2; document.getElementById('price2').innerText = cfg.price2;
+    document.getElementById('name3').innerText = cfg.name3; document.getElementById('price3').innerText = cfg.price3;
+    document.getElementById('name4').innerText = cfg.name4; document.getElementById('price4').innerText = cfg.price4;
+    
+    document.getElementById('stat1').innerText = cfg.stat1;
+    document.getElementById('statLabel1').innerText = cfg.statLabel1;
+    document.getElementById('stat2').innerText = cfg.stat2;
+    document.getElementById('statLabel2').innerText = cfg.statLabel2;
+    
+    document.getElementById('editName1').value = cfg.name1; document.getElementById('editPrice1').value = cfg.price1;
+    document.getElementById('editName2').value = cfg.name2; document.getElementById('editPrice2').value = cfg.price2;
+    document.getElementById('editName3').value = cfg.name3; document.getElementById('editPrice3').value = cfg.price3;
+    document.getElementById('editName4').value = cfg.name4; document.getElementById('editPrice4').value = cfg.price4;
+    document.getElementById('editStat1').value = cfg.stat1; document.getElementById('editStatLabel1').value = cfg.statLabel1;
+    document.getElementById('editStat2').value = cfg.stat2; document.getElementById('editStatLabel2').value = cfg.statLabel2;
+    
+    document.getElementById('webhookLink').value = cfg.webhook || '';
+    document.getElementById('googleFormsLink').value = cfg.gforms || '';
+    
+    document.getElementById('editHeroTitle').value = cfg.heroT;
+    document.getElementById('editHeroText').value = cfg.heroP;
+    
+    if(currentLang === 'cs') {
+        document.getElementById('heroTitle').innerText = cfg.heroT;
+        document.getElementById('heroText').innerText = cfg.heroP;
+    }
+    
+    changeLanguage(currentLang);
+}
 
-    if(webhookUrl) {
-        const msg = {
+// OBJEDNÁVKY A DISCORD WEBHOOK
+function openOrderModal(packName) {
+    if(!loggedInUser) {
+        showToast(translations[currentLang].toastLoginRequired);
+        openAuthModal('login');
+        return;
+    }
+    document.getElementById('selectedPackage').value = packName;
+    document.getElementById('modalTitle').innerText = translations[currentLang].btnOrder + ": " + packName;
+    document.getElementById('orderModal').style.display = 'flex';
+}
+function closeOrderModal() {
+    document.getElementById('orderModal').style.display = 'none';
+}
+
+function submitOrder() {
+    const t = translations[currentLang];
+    const pack = document.getElementById('selectedPackage').value;
+    const name = document.getElementById('orderName').value.trim();
+    const discord = document.getElementById('orderDiscord').value.trim();
+    const email = document.getElementById('orderEmail').value.trim();
+    const details = document.getElementById('orderDetails').value.trim();
+    const note = document.getElementById('orderNote').value.trim();
+    
+    if(!name || !discord || !email || !details) {
+        showToast(t.toastFields);
+        return;
+    }
+    
+    const cfg = JSON.parse(localStorage.getItem('webConfig')) || {};
+    
+    if(cfg.webhook) {
+        const payload = {
             embeds: [{
-                title: "📦 Nová Objednávka: " + pack,
-                color: 5814783,
+                title: `📦 Nová objednávka - Balíček ${pack}`,
+                color: 5814786,
                 fields: [
-                    { name: "Jméno", value: name, inline: true },
+                    { name: "Uživatel na webu", value: loggedInUser, inline: true },
+                    { name: "Jméno / Nick", value: name, inline: true },
                     { name: "Discord", value: discord, inline: true },
                     { name: "E-mail", value: email, inline: true },
-                    { name: "Detaily projektu", value: details }
+                    { name: "Detaily", value: details },
+                    { name: "Poznámka", value: note || "Žádná" }
                 ],
                 timestamp: new Date()
             }]
         };
-        fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(msg) });
+        
+        fetch(cfg.webhook, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            showToast(t.toastOrderSuccess);
+            setTimeout(() => {
+                window.location.href = cfg.gforms ? cfg.gforms : "#";
+            }, 2000);
+        }).catch(() => {
+            showToast(t.toastWebhookErr);
+        });
+    } else {
+        showToast(t.toastNoWebhook);
+        setTimeout(() => {
+            window.location.href = cfg.gforms ? cfg.gforms : "#";
+        }, 2000);
     }
-    
-    showToast("toastOrderSuccess");
     closeOrderModal();
 }
 
-function openAdminLogin() { document.getElementById("loginBox").style.display = "flex"; }
-function closeLogin() { document.getElementById("loginBox").style.display = "none"; }
+// ČÁSTICOVÉ POZADÍ (PARTICLES)
+function initParticles() {
+    const canvas = document.getElementById('particle-canvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let particlesArray = [];
 
-function loginAdmin() {
-    const u = document.getElementById("adminUser").value;
-    const p = document.getElementById("adminPass").value;
-    if(u === ADMIN_USERNAME && p === ADMIN_PASSWORD) {
-        closeLogin(); document.getElementById("adminPanel").style.display = "block";
-        loadSettingsFromDB();
-    } else { showToast("toastWrongAdmin"); }
-}
-function closeAdmin() { document.getElementById("adminPanel").style.display = "none"; }
-
-function saveSettings() {
-    const settings = {
-        name1: document.getElementById("editName1").value, price1: document.getElementById("editPrice1").value,
-        name2: document.getElementById("editName2").value, price2: document.getElementById("editPrice2").value,
-        name3: document.getElementById("editName3").value, price3: document.getElementById("editPrice3").value,
-        name4: document.getElementById("editName4").value, price4: document.getElementById("editPrice4").value,
-        stat1: document.getElementById("editStat1").value, statLabel1: document.getElementById("editStatLabel1").value,
-        stat2: document.getElementById("editStat2").value, statLabel2: document.getElementById("editStatLabel2").value,
-        webhook: document.getElementById("webhookLink").value,
-        heroTitle: document.getElementById("editHeroTitle").value, heroText: document.getElementById("editHeroText").value,
-    };
-    DB.saveSettings(settings);
-    showToast("Změny uloženy do databáze!", true);
-    applySettingsToUI(settings);
-}
-
-function loadSettingsFromDB() {
-    const settings = DB.getSettings();
-    if (Object.keys(settings).length > 0) {
-        document.getElementById("editName1").value = settings.name1 || ""; document.getElementById("editPrice1").value = settings.price1 || "";
-        document.getElementById("editName2").value = settings.name2 || ""; document.getElementById("editPrice2").value = settings.price2 || "";
-        document.getElementById("editName3").value = settings.name3 || ""; document.getElementById("editPrice3").value = settings.price3 || "";
-        document.getElementById("editName4").value = settings.name4 || ""; document.getElementById("editPrice4").value = settings.price4 || "";
-        document.getElementById("editStat1").value = settings.stat1 || ""; document.getElementById("editStatLabel1").value = settings.statLabel1 || "";
-        document.getElementById("editStat2").value = settings.stat2 || ""; document.getElementById("editStatLabel2").value = settings.statLabel2 || "";
-        document.getElementById("webhookLink").value = settings.webhook || "";
-        document.getElementById("editHeroTitle").value = settings.heroTitle || ""; document.getElementById("editHeroText").value = settings.heroText || "";
-        applySettingsToUI(settings);
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
     }
-}
+    window.addEventListener('resize', resize);
+    resize();
 
-function applySettingsToUI(settings) {
-    if(settings.name1) document.getElementById("name1").innerText = settings.name1; if(settings.price1) document.getElementById("price1").innerText = settings.price1;
-    if(settings.name2) document.getElementById("name2").innerText = settings.name2; if(settings.price2) document.getElementById("price2").innerText = settings.price2;
-    if(settings.name3) document.getElementById("name3").innerText = settings.name3; if(settings.price3) document.getElementById("price3").innerText = settings.price3;
-    if(settings.name4) document.getElementById("name4").innerText = settings.name4; if(settings.price4) document.getElementById("price4").innerText = settings.price4;
-    if(settings.stat1) document.getElementById("stat1").innerText = settings.stat1; if(settings.statLabel1) document.getElementById("statLabel1").innerText = settings.statLabel1;
-    if(settings.stat2) document.getElementById("stat2").innerText = settings.stat2; if(settings.statLabel2) document.getElementById("statLabel2").innerText = settings.statLabel2;
-    if(settings.heroTitle) document.getElementById("heroTitle").innerText = settings.heroTitle; if(settings.heroText) document.getElementById("heroText").innerText = settings.heroText;
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("loader").style.opacity = "0";
-    setTimeout(() => document.getElementById("loader").style.visibility = "hidden", 400);
-    AOS.init({ duration: 800, once: true });
-    changeLanguage("cs"); checkUserSession(); loadSettingsFromDB();
-});
-
-// Částice na pozadí
-const canvas = document.getElementById('particle-canvas');
-if (canvas) {
-    const ctx = canvas.getContext('2d'); let particles = [];
-    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resize); resize();
     class Particle {
         constructor() {
-            this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 2 + 1; this.speedX = Math.random() * 0.4 - 0.2; this.speedY = Math.random() * 0.4 - 0.2; this.alpha = Math.random() * 0.4 + 0.2;
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2 + 1;
+            this.speedX = Math.random() * 0.4 - 0.2;
+            this.speedY = Math.random() * 0.4 - 0.2;
+            this.alpha = Math.random() * 0.4 + 0.2;
         }
-        update() { this.x += this.speedX; this.y += this.speedY; if (this.x > canvas.width || this.x < 0) this.speedX *= -1; if (this.y > canvas.height || this.y < 0) this.speedY *= -1; }
-        draw() { ctx.fillStyle = `rgba(88, 101, 242, ${this.alpha})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+            if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+        }
+        draw() {
+            ctx.fillStyle = `rgba(88, 101, 242, ${this.alpha})`;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
     }
-    for(let i=0; i<60; i++) particles.push(new Particle());
-    function animate() { ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+
+    for (let i = 0; i < 60; i++) {
+        particlesArray.push(new Particle());
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particlesArray.forEach(p => {
+            p.update();
+            p.draw();
+        });
+        requestAnimationFrame(animate);
+    }
     animate();
 }
-
-// Custom kurzor
-const cursor = document.getElementById("cursor"); const cursorDot = document.getElementById("cursor-dot");
-window.addEventListener("mousemove", (e) => { cursor.style.left = e.clientX + "px"; cursor.style.top = e.clientY + "px"; cursorDot.style.left = e.clientX + "px"; cursorDot.style.top = e.clientY + "px"; });
 </script>
 </body>
 </html>
