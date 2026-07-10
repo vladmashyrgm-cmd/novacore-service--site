@@ -1,108 +1,340 @@
 <!DOCTYPE html>
+
 <html lang="cs">
+
 <head>
+
     <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Novacore 2026</title>
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    
+
     <script type="module">
+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
         import { getDatabase } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-        
-        const app = initializeApp({
+
+
+
+        const firebaseConfig = {
+
             apiKey: "AIzaSyC6t2CxNWbIWkw-9LyrjA0OAfvB-BIiGqY",
+
             authDomain: "novacorecz.firebaseapp.com",
+
             databaseURL: "https://novacorecz-default-rtdb.europe-west1.firebasedatabase.app",
+
             projectId: "novacorecz",
+
             storageBucket: "novacorecz.firebasestorage.app",
+
             messagingSenderId: "341391749799",
+
             appId: "1:341391749799:web:c4f99308cca340981d2182"
-        });
+
+        };
+
+        const app = initializeApp(firebaseConfig);
+
         window.auth = getAuth(app);
+
         window.db = getDatabase(app);
+
     </script>
+
+    
+
+    <style>
+
+        /* ZDE VLOŽ SVÉ CSS ZE ZAČÁTKU */
+
+    </style>
+
 </head>
+
 <body>
 
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
     <script type="module">
+
         import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
         import { push, ref } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // 1. PŘEKLADY (VLOŽ SEM SVŮJ OBJEKT TRANSLATIONS)
-        const translations = { /* SEM VLOŽ TEN SVŮJ VELKÝ OBJEKT TRANSLATIONS */ };
-        window.translations = translations;
-        window.currentLang = 'cs';
+
+
+        // VŠECHNY TVÉ PROMĚNNÉ A PŘEKLADY...
+
+        const ADMIN_USERNAME = "admin";
+
+        const ADMIN_PASSWORD = "V9#Discord2026!";
+
+        let currentAuthAction = 'login';
+
         window.currentAuthAction = 'login';
 
-        // 2. FUNKCE AUTH A OBJEDNÁVKY
+        let loggedInUser = null;
+
+        let currentLang = 'cs';
+
+        window.currentLang = 'cs';
+
+
+
+        const translations = { /* SEM VLOŽ TEN SVŮJ VELKÝ OBJEKT TRANSLATIONS */ };
+
+        window.translations = translations;
+
+
+
+        // FUNKCE AUTH (PŘEPOJENÁ NA FIREBASE)
+
         window.handleAuthSubmit = async function() {
+
             const user = document.getElementById('authUsername').value.trim();
+
             const pass = document.getElementById('authPassword').value.trim();
+
+            const t = translations[currentLang];
+
             try {
+
                 if (window.currentAuthAction === 'register') {
+
                     await createUserWithEmailAndPassword(window.auth, user, pass);
-                    alert("Registrováno!");
+
+                    showToast("✅ Registrace úspěšná!");
+
+                    openAuthModal('login');
+
                 } else {
+
                     await signInWithEmailAndPassword(window.auth, user, pass);
-                    location.reload();
+
+                    loggedInUser = user;
+
+                    showToast("👋 Vítej zpět!");
+
+                    closeAuthModal();
+
+                    checkUserSession();
+
                 }
-            } catch (e) { alert("Chyba: " + e.message); }
+
+            } catch (e) { showToast("❌ Chyba: " + e.message); }
+
         };
+
+
+
+        // FUNKCE OBJEDNÁVKA (ZÁPIS DO FIREBASE DB)
 
         window.submitOrder = async function() {
+
+            const pack = document.getElementById('selectedPackage').value;
+
+            const name = document.getElementById('orderName').value;
+
             try {
+
                 await push(ref(window.db, 'objednavky/'), {
+
                     uzivatel: window.auth.currentUser ? window.auth.currentUser.email : "Anonym",
-                    balicek: document.getElementById('selectedPackage').value,
-                    jmeno: document.getElementById('orderName').value,
+
+                    balicek: pack,
+
+                    jmeno: name,
+
                     datum: new Date().toISOString()
+
                 });
-                alert("Objednáno!");
-            } catch (e) { alert("Chyba: " + e.message); }
+
+                showToast("✅ Objednávka uložena do databáze!");
+
+                closeOrderModal();
+
+            } catch (e) { showToast("❌ Chyba DB: " + e.message); }
+
         };
 
-        // 3. VŠECHNY OSTATNÍ FUNKCE (RENDER, UI, ATD.)
-        window.renderFeatures = function() {
-            const p = translations[window.currentLang].packages;
-            for(let i = 1; i <= 4; i++) {
-                const list = document.getElementById('features' + i);
-                if(list) {
-                    list.innerHTML = '';
-                    p['p'+i].forEach(feat => {
-                        const li = document.createElement('li');
-                        li.innerHTML = `<i class="fas fa-check"></i> ` + feat;
-                        list.appendChild(li);
-                    });
-                }
-            }
-        };
 
-        window.renderFAQ = function() {
-            const container = document.getElementById('faqContainer');
-            if(container) {
-                container.innerHTML = '';
-                translations[window.currentLang].faqs.forEach(faq => {
-                    const item = document.createElement('div');
-                    item.className = 'faq-item';
-                    item.innerHTML = `<div class="faq-question" onclick="toggleFaq(this)">${faq.q}</div><div class="faq-answer">${faq.a}</div>`;
-                    container.appendChild(item);
-                });
-            }
-        };
 
-        window.toggleFaq = function(el) {
-            const ans = el.nextElementSibling;
-            ans.style.maxHeight = ans.style.maxHeight ? null : ans.scrollHeight + "px";
-        };
+        // ZBYTEK TVÝCH FUNKCÍ (TOGGLE THEME, RENDER FAQ, INIT PARTICLES ATD...)
 
-        window.showToast = function(msg) {
-            alert(msg); // Jednoduchá náhrada za toast
-        };
+        // Sem vlož vše ostatní, co jsi poslal v posledních zprávách...
 
-        // Inicializace při startu
-        window.onload = () => {
-            renderFeatures();
-            renderFAQ();
-        };
+        // 1. Změna jazyka a aktualizace textů na stránce
+
+window.changeLanguage = function(lang) {
+
+    currentLang = lang;
+
+    localStorage.setItem('lang', lang);
+
+    const t = translations[lang];
+
+    document.getElementById('heroTitle').innerText = t.heroT;
+
+    document.getElementById('heroText').innerText = t.heroP;
+
+    document.getElementById('faqTitle').innerText = t.faqTitle;
+
+    // ... a tak dále pro všechny prvky, které jsi měl v původním kódu ...
+
+    renderFeatures();
+
+    renderFAQ();
+
+};
+
+
+
+// 2. Vykreslování balíčků a FAQ
+
+function renderFeatures() {
+
+    const p = translations[currentLang].packages;
+
+    for(let i = 1; i <= 4; i++) {
+
+        const list = document.getElementById('features' + i);
+
+        if(!list) continue;
+
+        list.innerHTML = '';
+
+        p['p'+i].forEach(feat => {
+
+            const li = document.createElement('li');
+
+            li.innerHTML = `<i class="fas fa-check" style="color:var(--green)"></i> ` + feat;
+
+            list.appendChild(li);
+
+        });
+
+    }
+
+}
+
+
+
+function renderFAQ() {
+
+    const container = document.getElementById('faqContainer');
+
+    if(!container) return;
+
+    container.innerHTML = '';
+
+    translations[currentLang].faqs.forEach(faq => {
+
+        const item = document.createElement('div');
+
+        item.className = 'faq-item';
+
+        item.innerHTML = `
+
+            <div class="faq-question" onclick="toggleFaq(this)">${faq.q} <i class="fas fa-chevron-down"></i></div>
+
+            <div class="faq-answer"><p style="padding-bottom:20px;">${faq.a}</p></div>
+
+        `;
+
+        container.appendChild(item);
+
+    });
+
+}
+
+
+
+// 3. Přepínání FAQ (otvírání odpovědí)
+
+window.toggleFaq = function(el) {
+
+    const answer = el.nextElementSibling;
+
+    if(answer.style.maxHeight) {
+
+        answer.style.maxHeight = null;
+
+        el.querySelector('i').className = 'fas fa-chevron-down';
+
+    } else {
+
+        answer.style.maxHeight = answer.scrollHeight + "px";
+
+        el.querySelector('i').className = 'fas fa-chevron-up';
+
+    }
+
+};
+
+
+
+// 4. Přepínání vzhledu (Dark/Light mode)
+
+window.toggleTheme = function() {
+
+    const newTheme = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+
+    document.body.setAttribute('data-theme', newTheme);
+
+    localStorage.setItem('theme', newTheme);
+
+};
+
+
+
+// 5. Toast notifikace (bublinky s informací)
+
+window.showToast = function(message) {
+
+    const container = document.getElementById('toastContainer');
+
+    const toast = document.createElement('div');
+
+    toast.className = 'toast';
+
+    toast.innerHTML = message;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+
+        toast.style.opacity = '0';
+
+        setTimeout(() => toast.remove(), 300);
+
+    }, 4000);
+
+};
+
+
+
+// 6. Init Particles (pohybující se tečky na pozadí)
+
+function initParticles() {
+
+    // Tady vlož ten svůj kód pro canvas z minulé zprávy
+
+}
+
     </script>
+
 </body>
-</html>
+
+</html> 
+
