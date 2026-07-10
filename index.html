@@ -2,55 +2,56 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>NovaCore | Discord Studio 2026</title>
+    <title>NovaCore | Discord Studio</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
     <style>
-        /* CSS STYL - MODERNÍ A RYCHLÝ */
-        :root { --bg: #0a0a0c; --accent: #5865F2; --text: #ffffff; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .hero { text-align: center; margin-top: 50px; }
+        body { background: #0a0a0c; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
         .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; width: 100%; max-width: 1000px; margin-top: 40px; }
-        .card { background: rgba(25, 27, 38, 0.8); padding: 30px; border-radius: 20px; border: 1px solid #333; text-align: center; backdrop-filter: blur(10px); }
-        button { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; }
-        button:hover { background: #4752c4; }
+        .card { background: rgba(25, 27, 38, 0.8); padding: 30px; border-radius: 20px; border: 1px solid #5865F2; text-align: center; }
+        button { background: #5865F2; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="hero">
-        <h1>NovaCore 2026</h1>
-        <p>Profesionální správa a tvorba Discord serverů.</p>
-    </div>
-
-    <div class="container" id="packages">
-        </div>
+    <h1>NovaCore 2026</h1>
+    <div class="container" id="packages"></div>
 
     <script>
-        // FIREBASE A LOGIKA V JEDNOM
+        // TVOJE KONFIGURACE
+        const firebaseConfig = {
+            apiKey: "ZDE_DOPLN_TEN_API_KLIC_Z_KONZOLE",
+            databaseURL: "https://novacorecz-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "novacorecz",
+            appId: "1:341391749799:web:c4f99308cca340981d2182"
+        };
+        firebase.initializeApp(firebaseConfig);
+
         const packages = [
-            { name: "Starter", price: "299,-" },
-            { name: "Advanced", price: "699,-" },
-            { name: "Professional", price: "1299,-" },
-            { name: "Elite", price: "2499,-" }
+            { name: "Start", price: "300 Kč" },
+            { name: "Medium", price: "750 Kč" },
+            { name: "Pro", price: "1500 Kč" }
         ];
 
         const container = document.getElementById('packages');
+        container.innerHTML = packages.map(p => `
+            <div class="card">
+                <h3>${p.name}</h3>
+                <p>Cena: ${p.price}</p>
+                <button onclick="order('${p.name}', '${p.price}')">Objednat</button>
+            </div>
+        `).join('');
 
-        function renderPackages() {
-            container.innerHTML = packages.map(p => `
-                <div class="card">
-                    <h3>${p.name}</h3>
-                    <p>Cena: ${p.price}</p>
-                    <button onclick="order('${p.name}')">Objednat</button>
-                </div>
-            `).join('');
+        function order(name, price) {
+            firebase.database().ref('objednavky/').push({
+                balicek: name,
+                cena: price,
+                datum: new Date().toLocaleString()
+            }).then(() => {
+                alert("Objednávka " + name + " byla uložena!");
+            });
         }
-
-        function order(name) {
-            alert("Objednáváš: " + name + "\nLoguji do databáze a na Discord...");
-            // Zde později doplníš Firebase funkci pro zápis
-        }
-
-        renderPackages();
     </script>
 </body>
 </html>
