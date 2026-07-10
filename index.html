@@ -400,23 +400,50 @@ nav {
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyC6t2CxNWbIWkw-9LyrjA0OAfvB-BIiGqY",
-            authDomain: "novacorecz.firebaseapp.com",
-            databaseURL: "https://novacorecz-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "novacorecz",
-            storageBucket: "novacorecz.firebasestorage.app",
-            messagingSenderId: "341391749799",
-            appId: "1:341391749799:web:c4f99308cca340981d2182"
-        };
+const firebaseConfig = {
+    apiKey: "AIzaSyC6t2CxNWbIWkw-9LyrjA0OAfvB-BIiGqY",
+    authDomain: "novacorecz.firebaseapp.com",
+    databaseURL: "https://novacorecz-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "novacorecz",
+    storageBucket: "novacorecz.firebasestorage.app",
+    messagingSenderId: "341391749799",
+    appId: "1:341391749799:web:c4f99308cca340981d2182"
+};
 
-        const app = initializeApp(firebaseConfig);
-        window.auth = getAuth(app);
-        window.db = getDatabase(app);
-    </script>
+const app = initializeApp(firebaseConfig);
+window.auth = getAuth(app);
+window.db = getDatabase(app);
+
+// ZDE PONECHEJ SVÉ OSTATNÍ FUNKCE (toggleTheme, changeLanguage atd.)
+// A PŘIDEJ K NIM TYTO DVA NOVÉ ŘÁDKY:
+
+window.handleAuthSubmit = async function() {
+    const email = document.getElementById('authUsername').value.trim();
+    const pass = document.getElementById('authPassword').value.trim();
+    try {
+        if (currentAuthAction === 'register') {
+            await createUserWithEmailAndPassword(window.auth, email, pass);
+        } else {
+            await signInWithEmailAndPassword(window.auth, email, pass);
+        }
+        closeAuthModal();
+    } catch (e) { alert("Chyba: " + e.message); }
+};
+
+window.submitOrder = function() {
+    if (!window.auth.currentUser) { alert("Přihlašte se!"); return; }
+    const orderData = {
+        name: document.getElementById('orderName').value,
+        details: document.getElementById('orderDetails').value,
+        timestamp: new Date().toISOString()
+    };
+    set(push(ref(window.db, 'orders')), orderData)
+        .then(() => alert("Objednávka uložena!"));
+};    
+</script>
 </head>
 
 <canvas id="particle-canvas"></canvas>
@@ -452,8 +479,7 @@ nav {
             <button class="nav-btn secondary" id="navLogoutBtn" onclick="logoutUser()">Odhlásit</button>
         </div>
 
-        <button class="nav-btn" style="background:#2c2f33;" id="navAdminBtn" onclick="openAdminLogin()">Admin</button>
-    </nav>
+            </nav>
 </header>
 
 <section class="hero" data-aos="zoom-in">
