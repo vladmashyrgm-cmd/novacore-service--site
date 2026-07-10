@@ -2,56 +2,107 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>NovaCore | Discord Studio</title>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
-    <style>
-        body { background: #0a0a0c; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; width: 100%; max-width: 1000px; margin-top: 40px; }
-        .card { background: rgba(25, 27, 38, 0.8); padding: 30px; border-radius: 20px; border: 1px solid #5865F2; text-align: center; }
-        button { background: #5865F2; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-    </style>
+    <title>Novacore 2026</title>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        
+        const app = initializeApp({
+            apiKey: "AIzaSyC6t2CxNWbIWkw-9LyrjA0OAfvB-BIiGqY",
+            authDomain: "novacorecz.firebaseapp.com",
+            databaseURL: "https://novacorecz-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "novacorecz",
+            storageBucket: "novacorecz.firebasestorage.app",
+            messagingSenderId: "341391749799",
+            appId: "1:341391749799:web:c4f99308cca340981d2182"
+        });
+        window.auth = getAuth(app);
+        window.db = getDatabase(app);
+    </script>
 </head>
 <body>
 
-    <h1>NovaCore 2026</h1>
-    <div class="container" id="packages"></div>
+    <script type="module">
+        import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { push, ref } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    <script>
-        // TVOJE KONFIGURACE
-        const firebaseConfig = {
-            apiKey: "1:341391749799:web:c4f99308cca340981d2182",
-            databaseURL: "https://novacorecz-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "novacorecz",
-            appId: "1:341391749799:web:c4f99308cca340981d2182"
+        // 1. PŘEKLADY (VLOŽ SEM SVŮJ OBJEKT TRANSLATIONS)
+        const translations = { /* SEM VLOŽ TEN SVŮJ VELKÝ OBJEKT TRANSLATIONS */ };
+        window.translations = translations;
+        window.currentLang = 'cs';
+        window.currentAuthAction = 'login';
+
+        // 2. FUNKCE AUTH A OBJEDNÁVKY
+        window.handleAuthSubmit = async function() {
+            const user = document.getElementById('authUsername').value.trim();
+            const pass = document.getElementById('authPassword').value.trim();
+            try {
+                if (window.currentAuthAction === 'register') {
+                    await createUserWithEmailAndPassword(window.auth, user, pass);
+                    alert("Registrováno!");
+                } else {
+                    await signInWithEmailAndPassword(window.auth, user, pass);
+                    location.reload();
+                }
+            } catch (e) { alert("Chyba: " + e.message); }
         };
-        firebase.initializeApp(firebaseConfig);
 
-        const packages = [
-            { name: "Start", price: "300 Kč" },
-            { name: "Medium", price: "750 Kč" },
-            { name: "Pro", price: "1500 Kč" }
-        ];
+        window.submitOrder = async function() {
+            try {
+                await push(ref(window.db, 'objednavky/'), {
+                    uzivatel: window.auth.currentUser ? window.auth.currentUser.email : "Anonym",
+                    balicek: document.getElementById('selectedPackage').value,
+                    jmeno: document.getElementById('orderName').value,
+                    datum: new Date().toISOString()
+                });
+                alert("Objednáno!");
+            } catch (e) { alert("Chyba: " + e.message); }
+        };
 
-        const container = document.getElementById('packages');
-        container.innerHTML = packages.map(p => `
-            <div class="card">
-                <h3>${p.name}</h3>
-                <p>Cena: ${p.price}</p>
-                <button onclick="order('${p.name}', '${p.price}')">Objednat</button>
-            </div>
-        `).join('');
+        // 3. VŠECHNY OSTATNÍ FUNKCE (RENDER, UI, ATD.)
+        window.renderFeatures = function() {
+            const p = translations[window.currentLang].packages;
+            for(let i = 1; i <= 4; i++) {
+                const list = document.getElementById('features' + i);
+                if(list) {
+                    list.innerHTML = '';
+                    p['p'+i].forEach(feat => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<i class="fas fa-check"></i> ` + feat;
+                        list.appendChild(li);
+                    });
+                }
+            }
+        };
 
-        function order(name, price) {
-            firebase.database().ref('objednavky/').push({
-                balicek: name,
-                cena: price,
-                datum: new Date().toLocaleString()
-            }).then(() => {
-                alert("Objednávka " + name + " byla uložena!");
-            });
-        }
+        window.renderFAQ = function() {
+            const container = document.getElementById('faqContainer');
+            if(container) {
+                container.innerHTML = '';
+                translations[window.currentLang].faqs.forEach(faq => {
+                    const item = document.createElement('div');
+                    item.className = 'faq-item';
+                    item.innerHTML = `<div class="faq-question" onclick="toggleFaq(this)">${faq.q}</div><div class="faq-answer">${faq.a}</div>`;
+                    container.appendChild(item);
+                });
+            }
+        };
+
+        window.toggleFaq = function(el) {
+            const ans = el.nextElementSibling;
+            ans.style.maxHeight = ans.style.maxHeight ? null : ans.scrollHeight + "px";
+        };
+
+        window.showToast = function(msg) {
+            alert(msg); // Jednoduchá náhrada za toast
+        };
+
+        // Inicializace při startu
+        window.onload = () => {
+            renderFeatures();
+            renderFAQ();
+        };
     </script>
 </body>
 </html>
